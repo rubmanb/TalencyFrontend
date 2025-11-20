@@ -1,8 +1,11 @@
+import { Employee } from './../../interfaces/employee.interface';
+import { map } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DepartmentService } from '../../core/services/department.service';
 import { Department } from '../../interfaces/departments.interface';
+import { EmployeeService } from '../../core/services/employee.service';
 
 @Component({
   selector: 'app-departments',
@@ -29,14 +32,19 @@ export class Departments implements OnInit {
   totalEmployees: number = 0;
   avgEmployeesPerDept: number = 0;
 
+  // Employees cache + map de conteo por nombre de departamento
+  private employeesList: Employee[] = [];
+  employeesCountByDept = new Map<string, number>();
+
   constructor(
+    private employeesService: EmployeeService,
     private departmentService: DepartmentService,
     private fb: FormBuilder
   ) {}
 
   ngOnInit() {
     this.initForm();
-    this.loadDepartments();
+    this.loadEmployeesThenDepartments();
   }
 
   initForm() {
@@ -45,13 +53,25 @@ export class Departments implements OnInit {
     });
   }
 
-  async loadDepartments() {
-    this.departmentService.getAllDepartments().subscribe({
+  private loadDepartments() {
+    this.departmentService.getAllDepartments().pipe(
+      map(depts => depts.map(d => ({ ...d })))
+    ).subscribe({
       next: (departments) => {
-        this.departments = departments;
-        this.filteredDepartments = [...this.departments];
+        // asignar employeeCount leyendo del mapa
+        this.departments = departments.map(d => {
+          const key = (d.name || '').trim().toLowerCase();
+          const count = this.employeesCountByDept.get(key) || 0;
+          return {
+            ...d,
+            employeeCount: count,
+            // si quieres mapear managerName aquí también, hazlo
+            managerName: d.managerName // o calcular si hace falta
+          } as Department;
+        });
+
+        this.filterDepartments();   // actualiza filteredDepartments
         this.calculateStatistics();
-        this.filterDepartments();
       },
       error: (error) => {
         console.error('Error cargando departamentos:', error);
@@ -123,14 +143,16 @@ export class Departments implements OnInit {
   }
 
   filterDepartments() {
-    this.filteredDepartments = this.departments.filter(dept => {
-      const matchesSearch = !this.searchTerm ||
-        dept.name.toLowerCase().includes(this.searchTerm.toLowerCase());
-
-      const matchesFilter = !this.filterActive || (dept as any).active !== false;
-
+    this.filteredDepartments = this.departments
+    .filter(dept => {
+      const matchesSearch = !this.searchTerm || dept.name.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchesFilter = !this.filterActive || dept.active !== false;
       return matchesSearch && matchesFilter;
-    });
+    })
+    .map(dept => ({
+      ...dept,
+      managerName: dept.managerName,
+    }));
   }
 
   toggleActiveFilter() {
@@ -138,10 +160,11 @@ export class Departments implements OnInit {
     this.filterDepartments();
   }
 
-  calculateStatistics() {
+  private calculateStatistics() {
     this.totalDepartments = this.departments.length;
     this.activeDepartments = this.departments.filter(dept => (dept as any).active !== false).length;
-    this.totalEmployees = this.departments.reduce((sum, dept) => sum + (dept.employeeNames?.length || 0), 0);
+    // totalEmployees ya se actualizó cuando cargamos employeesList, pero dejamos esta fallback:
+    this.totalEmployees = this.employeesList.length || this.departments.reduce((sum, d) => sum + (d.employeeCount || 0), 0);
     this.avgEmployeesPerDept = this.totalDepartments > 0 ? this.totalEmployees / this.totalDepartments : 0;
   }
 
@@ -174,5 +197,41 @@ export class Departments implements OnInit {
     Object.keys(this.departmentForm.controls).forEach(key => {
       this.departmentForm.get(key)?.markAsTouched();
     });
+  }
+
+  private loadEmployeesThenDepartments() {
+    this.employeesService.getAll().pipe(
+      map(emp => emp || [])
+    ).subscribe({
+      next: (emp) => {
+        this.employeesList = emp;
+        this.buildEmployeesCountMap();
+        this.loadDepartments();
+        this.totalEmployees = this.employeesList.length;
+      },
+      error: (err) => {
+        console.error('Error cargando empleados:', err);
+        this.loadDepartments();
+      }
+    });
+  }
+
+  /*TODO: resolver error del map */
+  private buildEmployeesCountMap() {
+    this.employeesCountByDept.clear();
+
+    for (const e of this.employeesList) {
+      // ajusta aquí el nombre del campo que usas: e.department o e.departmentName
+      const deptName = e.department || '';
+      const key = deptName?.trim().toLowerCase();
+      if (!key) continue;
+      const current = this.employeesCountByDept.get(key) || 0;
+      this.employeesCountByDept.set(key, current + 1);
+    }
+  }
+
+  countEmployeesInDepartmentSync(deptName: string): number {
+    if (!deptName) return 0;
+    return this.employeesCountByDept.get(deptName.trim().toLowerCase()) || 0;
   }
 }

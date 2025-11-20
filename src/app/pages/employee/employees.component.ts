@@ -4,6 +4,8 @@ import { Employee } from '../../interfaces/employee.interface';
 
 import { CommonModule } from '@angular/common';
 import { EmployeeService } from '../../core/services/employee.service';
+import { DepartmentService } from '../../core/services/department.service';
+import { Department } from '../../interfaces/departments.interface';
 
 @Component({
   selector: 'employees',
@@ -21,6 +23,7 @@ export class Employees implements OnInit {
   searchText: string = '';
   filteredEmployees: Employee[] = [];
   activeTab: string = 'list';
+  departments: string[] = [];
 
   // Opciones para selects
   genders = ['MASCULINO', 'FEMENINO', 'OTRO'];
@@ -31,11 +34,13 @@ export class Employees implements OnInit {
 
   constructor(
     private employeeService: EmployeeService,
+    private deparmentService: DepartmentService,
     private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
     this.loadEmployees();
+    this.loadDepartments();
     this.initForm();
   }
 
@@ -189,5 +194,11 @@ export class Employees implements OnInit {
     const allocated = this.employeeForm.get('vacationsDaysAllocated')?.value || 0;
     const used = this.employeeForm.get('vacationsDaysUsed')?.value || 0;
     return allocated - used;
+  }
+
+  loadDepartments(){
+    this.deparmentService.getAllDepartments().subscribe((departments) => {
+      this.departments = departments.map(dept => dept.name);
+    });
   }
 }

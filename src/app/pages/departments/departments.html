@@ -43,54 +43,56 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let dept of filteredDepartments">
-              <td>
-                <strong>{{ dept.name }}</strong>
-              </td>
-              <td>
-                <span class="badge bg-primary">{{ dept.employeeCount || 0 }}</span>
-              </td>
-              <td>
-                {{ dept.managerName || 'Sin asignar' }}
-              </td>
-              <td>
-                {{ dept.budget ? (dept.budget | currency:'EUR':'symbol') : 'No asignado' }}
-              </td>
-              <td>
-                <span class="badge"
-                      [class.bg-success]="dept.active"
-                      [class.bg-secondary]="!dept.active">
-                  {{ dept.active ? 'Activo' : 'Inactivo' }}
-                </span>
-              </td>
-              <td class="text-end">
-                <div class="btn-group btn-group-sm">
-                  <button class="btn btn-outline-primary"
-                          (click)="editDepartment(dept)"
-                          title="Editar">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="btn btn-outline-info"
-                          (click)="viewDepartment(dept)"
-                          title="Ver detalles">
-                    <i class="bi bi-eye"></i>
-                  </button>
-                  <button class="btn btn-outline-danger"
-                          (click)="deleteDepartment(dept.id)"
-                          title="Eliminar">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            @if (filteredDepartments.length === 0) {
-            <tr>
-              <td colspan="6" class="text-center text-muted py-4">
-                <i class="bi bi-inbox display-4 d-block mb-2"></i>
-                No se encontraron departamentos
-              </td>
-            </tr>
-          }
+            @for (dept of filteredDepartments; track dept){
+              <tr>
+                <td>
+                  <strong>{{ dept.name }}</strong>
+                </td>
+                <td>
+                  <span class="badge bg-primary">{{ this.employeesCountByDept || 0 }}</span>
+                </td>
+                <td>
+                  {{ dept.managerName || 'Sin asignar' }}
+                </td>
+                <td>
+                  {{ dept.budget ? (dept.budget | currency:'EUR':'symbol') : 'No asignado' }}
+                </td>
+                <td>
+                  <span class="badge"
+                        [class.bg-success]="dept.active"
+                        [class.bg-secondary]="!dept.active">
+                    {{ dept.active ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary"
+                            (click)="editDepartment(dept)"
+                            title="Editar">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-outline-info"
+                            (click)="viewDepartment(dept)"
+                            title="Ver detalles">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-danger"
+                            (click)="deleteDepartment(dept.id)"
+                            title="Eliminar">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              @if (filteredDepartments.length === 0) {
+              <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                  <i class="bi bi-inbox display-4 d-block mb-2"></i>
+                  No se encontraron departamentos
+                </td>
+              </tr>
+              }
+            }
           </tbody>
         </table>
       </div>

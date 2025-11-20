@@ -1,22 +1,42 @@
-import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, inject } from '@angular/core';
+import {
+  HttpEvent,
+  HttpInterceptor,
+  HttpHandler,
+  HttpRequest,
+  HttpErrorResponse
+} from '@angular/common/http';
+import { Observable, catchError, throwError } from 'rxjs';
+import { Router } from '@angular/router';
 
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const platformId = inject(PLATFORM_ID);
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
 
-  // Solo acceder a localStorage en el navegador
-  if (isPlatformBrowser(platformId)) {
+  router = inject(Router);
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
     const token = localStorage.getItem('token');
 
+    let modifiedReq = req;
+
     if (token) {
-      const cloned = req.clone({
+      modifiedReq = req.clone({
         headers: req.headers.set('Authorization', `Bearer ${token}`)
       });
-      return next(cloned);
     }
-  }
 
-  return next(req);
-};
+    return next.handle(modifiedReq).pipe(
+      catchError((error: HttpErrorResponse) => {
+
+        if (error.status === 401 && error.error === 'TOKEN_EXPIRED') {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          this.router.navigate(['/login']);
+        }
+
+        return throwError(() => error);
+      })
+    );
+  }
+}
