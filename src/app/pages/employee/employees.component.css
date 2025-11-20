@@ -1,0 +1,28 @@
+.card-title {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+h6 {
+  color: #34495e;
+  font-weight: 500;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 0.75em;
+}
+
+.nav-tabs .nav-link.active {
+  font-weight: 600;
+  border-bottom: 3px solid #0d6efd;
+}

@@ -1,0 +1,201 @@
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">📊 Reportes y Analytics</h2>
+    <div class="btn-group">
+      <button class="btn btn-outline-primary" (click)="exportReport()">
+        <i class="bi bi-download me-2"></i>Exportar Reporte
+      </button>
+      <button class="btn btn-outline-success" (click)="refreshData()">
+        <i class="bi bi-arrow-clockwise me-2"></i>Actualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- Date Range Selector -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Rango de Fechas</h5>
+      <div class="row">
+        <div class="col-md-3">
+          <label class="form-label">Desde</label>
+          <input type="date" class="form-control" [(ngModel)]="dateRange.start">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Hasta</label>
+          <input type="date" class="form-control" [(ngModel)]="dateRange.end">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Tipo de Reporte</label>
+          <select class="form-select" [(ngModel)]="selectedReportType">
+            <option value="general">General</option>
+            <option value="hiring">Contrataciones</option>
+            <option value="turnover">Rotación</option>
+            <option value="department">Por Departamento</option>
+          </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <button class="btn btn-primary w-100" (click)="generateReport()">
+            Generar Reporte
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="row mb-4">
+    <div class="col-md-2">
+      <div class="card bg-primary text-white">
+        <div class="card-body text-center p-3">
+          <h3 class="mb-0">{{ kpis.totalEmployees }}</h3>
+          <small>Total Empleados</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card bg-success text-white">
+        <div class="card-body text-center p-3">
+          <h3 class="mb-0">{{ kpis.activeEmployees }}</h3>
+          <small>Empleados Activos</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card bg-info text-white">
+        <div class="card-body text-center p-3">
+          <h3 class="mb-0">{{ kpis.newHires }}</h3>
+          <small>Nuevas Contrataciones</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card bg-warning text-white">
+        <div class="card-body text-center p-3">
+          <h3 class="mb-0">{{ kpis.turnoverRate }}%</h3>
+          <small>Rotación</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card bg-danger text-white">
+        <div class="card-body text-center p-3">
+          <h3 class="mb-0">{{ kpis.terminations }}</h3>
+          <small>Bajas</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div class="card bg-secondary text-white">
+        <div class="card-body text-center p-3">
+          <h3 class="mb-0">{{ kpis.avgTenure | number:'1.1-1' }}</h3>
+          <small>Antigüedad Prom.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts and Graphs -->
+  <div class="row mb-4">
+    <!-- Department Distribution -->
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="card-title mb-0">📈 Distribución por Departamento</h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-container" style="height: 300px;">
+            <!-- Aquí iría tu gráfico de barras/dona -->
+            <div class="text-center text-muted py-5">
+              <i class="bi bi-bar-chart display-4 d-block mb-2"></i>
+              Gráfico de distribución
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hiring Trends -->
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="card-title mb-0">📅 Tendencias de Contratación</h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-container" style="height: 300px;">
+            <!-- Aquí iría tu gráfico de líneas -->
+            <div class="text-center text-muted py-5">
+              <i class="bi bi-graph-up display-4 d-block mb-2"></i>
+              Gráfico de tendencias
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Reports -->
+  <div class="row">
+    <!-- Department Performance -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">🏆 Rendimiento por Departamento</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Departamento</th>
+                  <th>Empleados</th>
+                  <th>Contrataciones</th>
+                  <th>Bajas</th>
+                  <th>Rotación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let dept of departmentReports">
+                  <td>{{ dept.name }}</td>
+                  <td>{{ dept.employeeCount }}</td>
+                  <td>{{ dept.newHires }}</td>
+                  <td>{{ dept.terminations }}</td>
+                  <td>
+                    <span [class.text-success]="dept.turnoverRate < 10"
+                          [class.text-warning]="dept.turnoverRate >= 10 && dept.turnoverRate < 20"
+                          [class.text-danger]="dept.turnoverRate >= 20">
+                      {{ dept.turnoverRate }}%
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">🕒 Actividad Reciente</h5>
+        </div>
+        <div class="card-body">
+          <div class="activity-timeline">
+            <div *ngFor="let activity of recentActivities" 
+                 class="activity-item d-flex mb-3">
+              <div class="activity-icon me-3">
+                <i class="bi bi-circle-fill text-primary"></i>
+              </div>
+              <div class="activity-content flex-grow-1">
+                <div class="fw-bold">{{ activity.description }}</div>
+                <small class="text-muted">{{ activity.timestamp | date:'medium' }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,162 @@
+<!-- Modal Simplificado - Controlado por Angular -->
+@if (isModalOpen) {
+  <div class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            {{ isEditing ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}
+          </h5>
+          <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+
+            <!-- Búsqueda de empleado -->
+            <div class="mb-3">
+              <label class="form-label">Buscar Empleado *</label>
+              <input type="text" class="form-control" [formControl]="employeeSearchControl"
+                     placeholder="Buscar por nombre, apellido, DNI o puesto...">
+
+              <!-- Resultados de búsqueda -->
+              @if (showEmployeeResults && filteredEmployees.length > 0) {
+                <div class="search-results">
+                  <div class="list-group">
+                    @for (employee of filteredEmployees; track employee.id) {
+                      <button type="button" class="list-group-item list-group-item-action"
+                              (click)="onEmployeeSelected(employee)">
+                        <strong>{{ employee.firstName }} {{ employee.lastName }}</strong><br>
+                        <small class="text-muted">DNI: {{ employee.dni }} | {{ employee.position }}</small>
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Empleado seleccionado -->
+              @if (selectedEmployee) {
+                <div class="mt-2 p-2 bg-light rounded">
+                  <strong>Empleado seleccionado:</strong> {{ selectedEmployee.firstName }} {{ selectedEmployee.lastName }}
+                </div>
+              }
+            </div>
+
+            <!-- Campos del formulario -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Nombre de Usuario *</label>
+                  <input type="text" class="form-control" formControlName="username"
+                         [class.is-invalid]="userForm.get('username')?.invalid && userForm.get('username')?.touched">
+                  @if (userForm.get('username')?.errors?.['required'] && userForm.get('username')?.touched) {
+                    <div class="invalid-feedback">
+                      El nombre de usuario es requerido
+                    </div>
+                  }
+                  @if (userForm.get('username')?.errors?.['minlength'] && userForm.get('username')?.touched) {
+                    <div class="invalid-feedback">
+                      Mínimo 3 caracteres
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Email *</label>
+                  <input type="email" class="form-control" formControlName="email"
+                         [class.is-invalid]="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+                  @if (userForm.get('email')?.errors?.['required'] && userForm.get('email')?.touched) {
+                    <div class="invalid-feedback">
+                      El email es requerido
+                    </div>
+                  }
+                  @if (userForm.get('email')?.errors?.['email'] && userForm.get('email')?.touched) {
+                    <div class="invalid-feedback">
+                      Formato de email inválido
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Contraseña *</label>
+                  <input type="password" class="form-control" formControlName="password"
+                         [class.is-invalid]="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+                  @if (userForm.get('password')?.errors?.['required'] && userForm.get('password')?.touched) {
+                    <div class="invalid-feedback">
+                      La contraseña es requerida
+                    </div>
+                  }
+                  @if (userForm.get('password')?.errors?.['minlength'] && userForm.get('password')?.touched) {
+                    <div class="invalid-feedback">
+                      Mínimo 6 caracteres
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Confirmar Contraseña *</label>
+                  <input type="password" class="form-control" formControlName="confirmPassword"
+                         [class.is-invalid]="userForm.get('confirmPassword')?.invalid && userForm.get('confirmPassword')?.touched">
+                  @if (userForm.get('confirmPassword')?.errors?.['required'] && userForm.get('confirmPassword')?.touched) {
+                    <div class="invalid-feedback">
+                      Confirmar contraseña es requerido
+                    </div>
+                  }
+                  @if (userForm.get('confirmPassword')?.errors?.['passwordMismatch'] && userForm.get('confirmPassword')?.touched) {
+                    <div class="invalid-feedback">
+                      Las contraseñas no coinciden
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Roles -->
+            <div class="mb-3">
+              <label class="form-label">Roles *</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="ROLE_ADMIN" id="roleAdmin"
+                       (change)="onRoleChange($event)" [checked]="selectedRoles.includes('ROLE_ADMIN')">
+                <label class="form-check-label" for="roleAdmin">
+                  Administrador
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="ROLE_HR" id="roleHr"
+                       (change)="onRoleChange($event)" [checked]="selectedRoles.includes('ROLE_HR')">
+                <label class="form-check-label" for="roleHr">
+                  Recursos Humanos
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="ROLE_EMPLOYEE" id="roleEmployee"
+                       (change)="onRoleChange($event)" [checked]="selectedRoles.includes('ROLE_EMPLOYEE')">
+                <label class="form-check-label" for="roleEmployee">
+                  Empleado
+                </label>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+              <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+                @if (isLoading) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                {{ isEditing ? 'Actualizar' : 'Crear' }} Usuario
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+}

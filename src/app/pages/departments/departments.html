@@ -1,0 +1,177 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">🏢 Gestión de Departamentos</h2>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <i class="bi bi-plus-circle me-2"></i>Nuevo Departamento
+    </button>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text bg-light border-end-0">
+          <i class="bi bi-search"></i>
+        </span>
+        <input type="text" class="form-control border-start-0"
+               placeholder="Buscar departamentos..."
+               [(ngModel)]="searchTerm"
+               (input)="filterDepartments()">
+      </div>
+    </div>
+    <div class="col-md-6 text-end">
+      <div class="btn-group">
+        <button class="btn btn-outline-secondary" [class.active]="filterActive"
+                (click)="toggleActiveFilter()">
+          {{ filterActive ? 'Todos' : 'Solo Activos' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Empleados</th>
+              <th>Jefe de Departamento</th>
+              <th>Presupuesto</th>
+              <th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dept of filteredDepartments">
+              <td>
+                <strong>{{ dept.name }}</strong>
+              </td>
+              <td>
+                <span class="badge bg-primary">{{ dept.employeeCount || 0 }}</span>
+              </td>
+              <td>
+                {{ dept.managerName || 'Sin asignar' }}
+              </td>
+              <td>
+                {{ dept.budget ? (dept.budget | currency:'EUR':'symbol') : 'No asignado' }}
+              </td>
+              <td>
+                <span class="badge"
+                      [class.bg-success]="dept.active"
+                      [class.bg-secondary]="!dept.active">
+                  {{ dept.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="text-end">
+                <div class="btn-group btn-group-sm">
+                  <button class="btn btn-outline-primary"
+                          (click)="editDepartment(dept)"
+                          title="Editar">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-outline-info"
+                          (click)="viewDepartment(dept)"
+                          title="Ver detalles">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn btn-outline-danger"
+                          (click)="deleteDepartment(dept.id)"
+                          title="Eliminar">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            @if (filteredDepartments.length === 0) {
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4">
+                <i class="bi bi-inbox display-4 d-block mb-2"></i>
+                No se encontraron departamentos
+              </td>
+            </tr>
+          }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <h5 class="card-title">{{ totalDepartments }}</h5>
+          <p class="card-text">Total Departamentos</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <h5 class="card-title">{{ activeDepartments }}</h5>
+          <p class="card-text">Departamentos Activos</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white">
+        <div class="card-body">
+          <h5 class="card-title">{{ totalEmployees }}</h5>
+          <p class="card-text">Total Empleados</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-warning text-white">
+        <div class="card-body">
+          <h5 class="card-title">{{ avgEmployeesPerDept | number:'1.1-1' }}</h5>
+          <p class="card-text">Promedio por Depto.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (isModalOpen) {
+    <div class="modal-overlay">
+      <div class="modal-container">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              {{ isEditing ? 'Editar Departamento' : 'Crear Nuevo Departamento' }}
+            </h5>
+            <button type="button" class="btn-close" (click)="closeModal()"></button>
+          </div>
+
+          <div class="modal-body">
+            <form [formGroup]="departmentForm" (ngSubmit)="submitForm()">
+              <div class="mb-3">
+                <label class="form-label">Nombre del Departamento *</label>
+                <input type="text" class="form-control" formControlName="name"
+                       placeholder="Ej: Recursos Humanos, Tecnología...">
+                @if (departmentForm.get('name')?.invalid && departmentForm.get('name')?.touched) {
+                  <div class="text-danger">
+                    @if (departmentForm.get('name')?.errors?.['required']) {
+                      <small>El nombre es requerido</small>
+                    }
+                    @if (departmentForm.get('name')?.errors?.['minlength']) {
+                      <small>Mínimo 2 caracteres</small>
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary"
+                        [disabled]="departmentForm.invalid">
+                  {{ isEditing ? 'Actualizar' : 'Crear' }} Departamento
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

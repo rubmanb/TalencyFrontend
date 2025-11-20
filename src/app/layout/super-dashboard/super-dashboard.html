@@ -1,0 +1,254 @@
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="mt-3">
+      <h1 class="h3 mb-0">🏢 Dashboard Super Admin</h1>
+      <p class="text-muted mb-0">Gestión global del sistema SaaS</p>
+    </div>
+    <div class="text-end">
+      <p class="mb-0"><strong>Sistema:</strong> {{ systemStats.systemUsage }}% de uso</p>
+      <small class="text-muted">Actualizado: {{ today | date:'medium' }}</small>
+    </div>
+  </div>
+
+  <!-- Estadísticas Principales -->
+  <div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-primary shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                Total Empresas
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">
+                {{ systemStats.totalCompanies }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-building fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                Empresas Activas
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">
+                {{ systemStats.activeCompanies }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-info shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                Total Empleados
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">
+                {{ systemStats.totalEmployees }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-users fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-warning shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                Nuevos Registros (30d)
+              </div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">
+                {{ systemStats.recentRegistrations }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="row mb-4">
+    <div class="col-xl-8 col-lg-7">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Evolución de Registro de Empresas</h6>
+        </div>
+        <div class="card-body">
+          <div class="chart-area">
+            <canvas id="companiesChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-5">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Distribución por Planes</h6>
+        </div>
+        <div class="card-body">
+          <div class="chart-pie pt-4 pb-2">
+            <canvas id="plansChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Empresas -->
+  <div class="card shadow">
+    <div class="card-header py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Gestión de Empresas</h6>
+        <div>
+          <button class="btn btn-primary btn-sm">
+            <i class="fas fa-plus me-1"></i> Nueva Empresa
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Filtros -->
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <input type="text" class="form-control" placeholder="🔍 Buscar empresa..."
+                 [(ngModel)]="searchTerm">
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" [(ngModel)]="statusFilter">
+            <option value="ALL">Todos los estados</option>
+            <option value="ACTIVE">Activas</option>
+            <option value="SUSPENDED">Suspendidas</option>
+            <option value="PENDING">Pendientes</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" [(ngModel)]="planFilter">
+            <option value="ALL">Todos los planes</option>
+            <option value="FREE">Free</option>
+            <option value="BASIC">Basic</option>
+            <option value="PREMIUM">Premium</option>
+            <option value="ENTERPRISE">Enterprise</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-outline-secondary w-100" (click)="searchTerm = ''; statusFilter = 'ALL'; planFilter = 'ALL'">
+            Limpiar
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de Empresas -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Empresa</th>
+              <th>Contacto</th>
+              <th>Plan</th>
+              <th>Estado</th>
+              <th>Empleados</th>
+              <th>Registro</th>
+              <th>Último Login</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (company of filteredCompanies; track company.id) {
+              <tr>
+                <td>
+                  <strong>{{ company.name }}</strong>
+                  <br>
+                  <small class="text-muted">ID: {{ company.id }}</small>
+                </td>
+                <td>
+                  <div>{{ company.email }}</div>
+                  <small class="text-muted">{{ company.phone }}</small>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="getPlanBadgeClass(company.plan)">
+                    {{ company.plan }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="getStatusBadgeClass(company.status)">
+                    {{ company.status === 'ACTIVE' ? 'Activa' :
+                       company.status === 'SUSPENDED' ? 'Suspendida' : 'Pendiente' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="text-center">
+                    <strong>{{ company.employeesCount }}</strong>
+                    <br>
+                    <small class="text-muted">{{ company.departmentsCount }} dept.</small>
+                  </div>
+                </td>
+                <td>{{ formatDate(company.createdAt) }}</td>
+                <td>{{ formatDate(company.lastLogin) }}</td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" (click)="viewCompany(company)"
+                            title="Ver detalles">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-warning" (click)="editCompany(company)"
+                            title="Editar">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    @if (company.status === 'ACTIVE') {
+                      <button class="btn btn-outline-danger" (click)="suspendCompany(company)"
+                              title="Suspender">
+                        <i class="fas fa-pause"></i>
+                      </button>
+                    }
+                    @if (company.status === 'SUSPENDED') {
+                      <button class="btn btn-outline-success" (click)="activateCompany(company)"
+                              title="Activar">
+                        <i class="fas fa-play"></i>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (filteredCompanies.length === 0) {
+              <tr>
+                <td colspan="8" class="text-center text-muted py-4">
+                  No se encontraron empresas con los filtros aplicados
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

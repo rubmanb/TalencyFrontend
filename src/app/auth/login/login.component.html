@@ -1,0 +1,119 @@
+<div class="container-fluid vh-150 bg-light">
+  <div class="row h-100 justify-content-center align-items-center">
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center py-4">
+          <i class="bi bi-shield-lock display-4 mb-3"></i>
+          <h2 class="h3 mb-0">Talency HR</h2>
+          <p class="mb-0 opacity-75">Sistema de Gestión de Empleados</p>
+        </div>
+
+        <div class="card-body p-4">
+          <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+            <!-- Company -->
+            <div class="mb-3">
+              <label for="company" class="form-label">
+                <i class="bi bi-building me-2"></i>Compañía
+              </label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="company"
+                name="company"
+                [(ngModel)]="loginData.company"
+                required
+                placeholder="Ingresa el nombre de la compañía"
+                [class.is-invalid]="errorMessage && !loginData.company">
+            </div>
+
+            <!-- Username -->
+            <div class="mb-3">
+              <label for="username" class="form-label">
+                <i class="bi bi-person me-2"></i>Usuario
+              </label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                id="username"
+                name="username"
+                [(ngModel)]="loginData.username"
+                required
+                placeholder="Ingresa tu usuario"
+                [class.is-invalid]="errorMessage && !loginData.username">
+            </div>
+
+            <!-- Password -->
+            <div class="mb-4">
+              <label for="password" class="form-label">
+                <i class="bi bi-key me-2"></i>Contraseña
+              </label>
+              <input
+                type="password"
+                class="form-control form-control-lg"
+                id="password"
+                name="password"
+                [(ngModel)]="loginData.password"
+                required
+                placeholder="Ingresa tu contraseña"
+                [class.is-invalid]="errorMessage && !loginData.password">
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              class="btn btn-primary btn-lg w-100 py-2"
+              [disabled]="isLoading"
+              [class.btn-loading]="isLoading">
+              @if (!isLoading) {
+                <span>
+                  <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                </span>
+              } @else {
+                <span>
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Iniciando sesión...
+                </span>
+              }
+            </button>
+          </form>
+
+          <!-- Error Message -->
+          @if (errorMessage) {
+            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ errorMessage }}
+              <button type="button" class="btn-close" (click)="errorMessage = null"></button>
+            </div>
+          }
+
+          <!-- Test Credentials -->
+          <div class="mt-4 p-3 bg-light rounded">
+            <h6 class="text-muted mb-3">
+              <i class="bi bi-info-circle me-2"></i>Credenciales de Prueba
+            </h6>
+            <div class="row">
+              <div class="col-12 mb-2">
+                <small class="text-dark fw-bold">Company:</small><br>
+                <code class="text-primary">Company</code>
+              </div>
+              <div class="col-12 mb-2">
+                <small class="text-dark fw-bold">Administrador:</small><br>
+                <code class="text-primary">admin.maria</code> / <code class="text-primary">admin123</code>
+              </div>
+              <div class="col-12">
+                <small class="text-dark fw-bold">Recursos Humanos:</small><br>
+                <code class="text-primary">rh.ana</code> / <code class="text-primary">ana123</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer text-center py-3">
+          <small class="text-muted">
+            &copy; 2024 Talency HR System. Todos los derechos reservados.
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
