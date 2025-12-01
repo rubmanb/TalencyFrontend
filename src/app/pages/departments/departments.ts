@@ -34,7 +34,8 @@ export class Departments implements OnInit {
 
   // Employees cache + map de conteo por nombre de departamento
   private employeesList: Employee[] = [];
-  employeesCountByDept = new Map<string, number>();
+  // map keys are normalized department names (string) and values are counts (number)
+  employeesCountByDept = new Map<number, number>();
 
   constructor(
     private employeesService: EmployeeService,
@@ -60,15 +61,14 @@ export class Departments implements OnInit {
       next: (departments) => {
         // asignar employeeCount leyendo del mapa
         this.departments = departments.map(d => {
-          const key = (d.name || '').trim().toLowerCase();
-          const count = this.employeesCountByDept.get(key) || 0;
-          return {
-            ...d,
-            employeeCount: count,
-            // si quieres mapear managerName aquí también, hazlo
-            managerName: d.managerName // o calcular si hace falta
-          } as Department;
-        });
+        const count = this.employeesCountByDept.get(d.id) || 0;
+        return {
+          ...d,
+          employeeCount: count,
+          managerName: d.managerName
+        } as Department;
+      });
+
 
         this.filterDepartments();   // actualiza filteredDepartments
         this.calculateStatistics();
@@ -216,22 +216,24 @@ export class Departments implements OnInit {
     });
   }
 
-  /*TODO: resolver error del map */
   private buildEmployeesCountMap() {
     this.employeesCountByDept.clear();
 
+    console.log('Building employees count map from employees:', this.employeesList);
+
     for (const e of this.employeesList) {
-      // ajusta aquí el nombre del campo que usas: e.department o e.departmentName
-      const deptName = e.department || '';
-      const key = deptName?.trim().toLowerCase();
-      if (!key) continue;
-      const current = this.employeesCountByDept.get(key) || 0;
-      this.employeesCountByDept.set(key, current + 1);
+      const deptId = e.department_id;
+
+      if (!deptId) continue;
+
+      const current = this.employeesCountByDept.get(deptId) || 0;
+      this.employeesCountByDept.set(deptId, current + 1);
     }
   }
 
-  countEmployeesInDepartmentSync(deptName: string): number {
-    if (!deptName) return 0;
-    return this.employeesCountByDept.get(deptName.trim().toLowerCase()) || 0;
+
+  countEmployeesInDepartmentSync(deptId: number): number {
+    return this.employeesCountByDept.get(deptId) || 0;
   }
+
 }

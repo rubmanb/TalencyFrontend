@@ -22,7 +22,7 @@ export interface Employee {
   vacations_days_allocated?: number;
   vacations_days_used?: number;
   bank_name?: string;
-  department?: string;
+  department_id?: number;
   contract_type?: string;
   contract_expire_date?: string;
   hireDate: string;

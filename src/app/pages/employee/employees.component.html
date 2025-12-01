@@ -61,7 +61,7 @@
           <label class="form-label">Estado Civil</label>
           <select formControlName="maritalStatus" class="form-select">
             <option value="">Seleccionar...</option>
-            @for (status of maritalStatuses; track status) {
+            @for (status of maritalStatus; track status) {
               <option [value]="status">{{ status }}</option>
             }
           </select>
@@ -196,12 +196,11 @@
         <div class="col-md-4 mb-3">
           <label class="form-label">Departamento</label>
           @if (!departments || departments.length === 0) {
-            <input formControlName="department" class="form-control" placeholder="Departamento" />
+            <input formControlName="department_id" class="form-control" placeholder="Departamento" />
           }@else {
-            <select formControlName="department" class="form-select">
-              <option value="">Seleccionar...</option>
+            <select formControlName="department_id" class="form-select">
               @for (dept of departments; track dept) {
-                <option [value]="dept">{{ dept }}</option>
+                <option [value]="dept.id">{{ dept.name }}</option>
               }
             </select>
           }
