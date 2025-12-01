@@ -49,7 +49,7 @@
                   <strong>{{ dept.name }}</strong>
                 </td>
                 <td>
-                  <span class="badge bg-primary">{{ employeesCountByDept.get(dept.id) || 0 }}</span>
+                  <span class="badge bg-primary">{{ employeesCountByDept.get(dept.id!) || 0 }}</span>
                 </td>
                 <td>
                   {{ dept.managerName || 'Sin asignar' }}

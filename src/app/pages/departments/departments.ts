@@ -34,7 +34,6 @@ export class Departments implements OnInit {
 
   // Employees cache + map de conteo por nombre de departamento
   private employeesList: Employee[] = [];
-  // map keys are normalized department names (string) and values are counts (number)
   employeesCountByDept = new Map<number, number>();
 
   constructor(
@@ -59,7 +58,6 @@ export class Departments implements OnInit {
       map(depts => depts.map(d => ({ ...d })))
     ).subscribe({
       next: (departments) => {
-        // asignar employeeCount leyendo del mapa
         this.departments = departments.map(d => {
         const count = this.employeesCountByDept.get(d.id) || 0;
         return {
@@ -70,7 +68,7 @@ export class Departments implements OnInit {
       });
 
 
-        this.filterDepartments();   // actualiza filteredDepartments
+        this.filterDepartments();
         this.calculateStatistics();
       },
       error: (error) => {
@@ -163,7 +161,6 @@ export class Departments implements OnInit {
   private calculateStatistics() {
     this.totalDepartments = this.departments.length;
     this.activeDepartments = this.departments.filter(dept => (dept as any).active !== false).length;
-    // totalEmployees ya se actualizó cuando cargamos employeesList, pero dejamos esta fallback:
     this.totalEmployees = this.employeesList.length || this.departments.reduce((sum, d) => sum + (d.employeeCount || 0), 0);
     this.avgEmployeesPerDept = this.totalDepartments > 0 ? this.totalEmployees / this.totalDepartments : 0;
   }
@@ -218,22 +215,12 @@ export class Departments implements OnInit {
 
   private buildEmployeesCountMap() {
     this.employeesCountByDept.clear();
-
-    console.log('Building employees count map from employees:', this.employeesList);
-
     for (const e of this.employeesList) {
-      const deptId = e.department_id;
+      if (!e.department_id) continue;
 
-      if (!deptId) continue;
-
+      const deptId = Number(e.department_id);
       const current = this.employeesCountByDept.get(deptId) || 0;
       this.employeesCountByDept.set(deptId, current + 1);
     }
   }
-
-
-  countEmployeesInDepartmentSync(deptId: number): number {
-    return this.employeesCountByDept.get(deptId) || 0;
-  }
-
 }
