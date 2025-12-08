@@ -9,8 +9,7 @@
     }
   </div>
 
-  <!-- Esto DEBE estar en el template -->
-  <app-create-user #createUserModal></app-create-user>
+  <app-create-user #createUserModal [employeesCanBeUsers]="employeesCanBeUsers" (saveUser)="onSaveUser($event)"></app-create-user>
 
   <!-- User Statistics -->
   <div class="row mb-4">

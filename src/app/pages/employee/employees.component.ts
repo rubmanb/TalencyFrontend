@@ -60,7 +60,7 @@ export class Employees implements OnInit {
       dni: ['', [Validators.required, Validators.pattern(/^\d{8}[A-Z]$/)]],
       healthInsuranceNumber: ['', Validators.required],
       maritalStatus: [''],
-      emailPersonal: ['', Validators.email],
+      email: ['', Validators.email],
 
       // Datos de contacto
       address: [''],

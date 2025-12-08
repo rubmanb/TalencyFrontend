@@ -1,28 +1,16 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { AuthService } from '../../core/services/auth.service'; // ← Cambiar por AuthService
 import { CreateUser } from '../create-user/create-user';
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  employeeName?: string;
-  roles: string[];
-  lastLogin?: string;
-  active: boolean;
-  createdAt: string;
-}
-
-interface UserStats {
-  total: number;
-  active: number;
-  admins: number;
-  hr: number;
-  employees: number;
-  inactive: number;
-}
+import { UserService } from './../../core/services/user.service';
+import { UserResponseDTO } from '../../core/dto/user-response.dto';
+import { EmployeeService } from '../../core/services/employee.service';
+import { Employee } from '../../interfaces/employee.interface';
+import { DepartmentService } from '../../core/services/department.service';
+import { forkJoin, Observable } from 'rxjs';
+import { UserRequestDTO } from '../../core/dto/user-request.dto';
 
 @Component({
   selector: 'app-users',
@@ -35,11 +23,12 @@ export class Users implements OnInit, AfterViewInit {
 
   @ViewChild(CreateUser) createUserModal!: CreateUser;
 
-  users: User[] = [];
-  filteredUsers: User[] = [];
+  users: UserResponseDTO[] = [];
+  filteredUsers: UserResponseDTO[] = [];
   searchTerm: string = '';
   roleFilter: string = '';
   statusFilter: string = '';
+  employeesCanBeUsers: Employee[] = [];
 
   // Pagination
   currentPage: number = 1;
@@ -55,29 +44,58 @@ export class Users implements OnInit, AfterViewInit {
     inactive: 0
   };
 
-  constructor(private authService: AuthService) {} // ← Cambiar por AuthService
+  allowedDepartmentIds: number[] = [];
+
+
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+    private employeeService: EmployeeService,
+    private departmentService: DepartmentService
+  ) {}
 
   ngOnInit() {
-    this.loadUsers();
+    this.loadDepartmentsEmployeesAndUsers();
   }
 
   ngAfterViewInit() {
     console.log('✅ CreateUserModal disponible:', this.createUserModal);
   }
 
-  loadUsers() {
-    // Simular carga de datos - reemplazar con API real
-    this.users = [
-      { id: 1, username: 'admin.maria', email: 'admin@empresa.com', employeeName: 'María García López', roles: ['ROLE_ADMIN'], lastLogin: '2024-10-04T10:30:00', active: true, createdAt: '2024-01-15' },
-      { id: 2, username: 'rh.ana', email: 'rh.ana@empresa.com', employeeName: 'Ana Martínez Ruiz', roles: ['ROLE_HR'], lastLogin: '2024-10-04T09:15:00', active: true, createdAt: '2024-02-10' },
-      { id: 3, username: 'carlos.dev', email: 'carlos@empresa.com', employeeName: 'Carlos Rodríguez Sánchez', roles: ['ROLE_EMPLOYEE'], lastLogin: '2024-10-03T16:45:00', active: true, createdAt: '2024-03-01' },
-      { id: 4, username: 'laura.fin', email: 'laura@empresa.com', employeeName: 'Laura Sánchez Gómez', roles: ['ROLE_EMPLOYEE'], lastLogin: '2024-10-04T08:20:00', active: true, createdAt: '2024-03-15' },
-      { id: 5, username: 'david.marketing', email: 'david@empresa.com', employeeName: 'David López Martín', roles: ['ROLE_EMPLOYEE'], lastLogin: '2024-10-02T14:30:00', active: false, createdAt: '2024-04-01' },
-      { id: 6, username: 'marta.sales', email: 'marta@empresa.com', employeeName: 'Marta García Pérez', roles: ['ROLE_HR', 'ROLE_EMPLOYEE'], lastLogin: '2024-10-04T11:00:00', active: true, createdAt: '2024-04-15' }
-    ];
+  // Comprobar que empleados pueden ser usuarios
+  private loadDepartmentsEmployeesAndUsers() {
+    forkJoin({
+      departments: this.departmentService.getAllDepartments(),
+      employees: this.employeeService.getAll(),
+      users: this.userService.getAllUsers()
+    }).subscribe({
+      next: ({ departments, employees, users }) => {
 
-    this.filteredUsers = [...this.users];
-    this.calculateStats();
+        this.users = users;
+
+        const allowedNames = ['dirección', 'direccion', 'recursos humanos'];
+        this.allowedDepartmentIds = departments
+          .filter(d => allowedNames.includes((d.name || '').trim().toLowerCase()))
+          .map(d => d.id);
+
+        this.employeesCanBeUsers = (employees || [])
+          .filter(emp => {
+            const deptId = emp.department_id ?? null;
+            const empHasUser = (this.users || []).some(u => u.employeeId === emp.id);
+            return !empHasUser && deptId !== null && this.allowedDepartmentIds.includes(Number(deptId));
+          });
+
+        console.log('👥 Empleados que pueden ser usuarios:', this.employeesCanBeUsers);
+
+        // actualizar stats / UI
+        this.filteredUsers = [...this.users];
+        this.calculateStats();
+      },
+      error: (err) => {
+        console.error('Error cargando datos para users/employees/departments:', err);
+        // fallback: intentar cargar por separado o mostrar mensaje
+      }
+    });
   }
 
   filterUsers() {
@@ -175,5 +193,15 @@ export class Users implements OnInit, AfterViewInit {
     if (this.createUserModal) {
       this.createUserModal.editUser(user);
     }
+  }
+
+  onSaveUser(dto: any) {
+    this.userService.createUser(dto).subscribe({
+      next: () => {
+        alert('Usuario creado');
+        this.loadDepartmentsEmployeesAndUsers(); // refrescar
+      },
+      error: err => console.error('Error creating user', err)
+    });
   }
 }

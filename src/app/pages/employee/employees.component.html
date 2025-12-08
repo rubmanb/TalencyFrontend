@@ -68,9 +68,9 @@
         </div>
 
         <div class="col-md-4 mb-3">
-          <label class="form-label">Email Personal</label>
-          <input type="email" formControlName="emailPersonal" class="form-control" />
-          @if (employeeForm.get('emailPersonal')?.invalid && employeeForm.get('emailPersonal')?.touched) {
+          <label class="form-label">Email</label>
+          <input type="email" formControlName="email" class="form-control" />
+          @if (employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched) {
             <small class="text-danger">Email no válido</small>
           }
         </div>

@@ -6,6 +6,7 @@ export interface Employee {
   firstName: string;
   id?: number;
   dni: string;
+  email?: string;
   address?: string;
   city?: string;
   country?: string;
@@ -14,7 +15,6 @@ export interface Employee {
   gender?: string;
   health_insurance_number: string;
   marital_status: string;
-  email_personal?: string;
   emergency_contact?: string;
   job_level?: string;
   work_schedule?: string;

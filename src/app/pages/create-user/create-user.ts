@@ -1,18 +1,9 @@
-import { map, Observable } from 'rxjs';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { Employee } from './../../interfaces/employee.interface';
 import { RoleService } from '../../core/services/role.service';
-
-interface Employee {
-  id: number;
-  firstName: string;
-  lastName: string;
-  dni: string;
-  position: string;
-  email?: string;
-}
+import { Role } from '../../interfaces/role.interface';
 
 @Component({
   selector: 'app-create-user',
@@ -22,41 +13,44 @@ interface Employee {
   styleUrls: ['./create-user.css']
 })
 export class CreateUser implements OnInit {
+
+  // ⬇ Empleados permitidos enviados desde Users
+  @Input() employeesCanBeUsers: Employee[] = [];
+
+  // ⬇ Evento que se envía al padre
+  @Output() saveUser = new EventEmitter<any>();
+
   userForm: FormGroup;
   employeeSearchControl = new FormControl();
-  selectedEmployee: Employee | null = null;
-  selectedRoles: string[] = [];
-  showEmployeeResults: boolean = false;
   filteredEmployees: Employee[] = [];
+
+  selectedEmployee: Employee | null = null;
+  roles: Role[] = [];
+  selectedRoles: Role[] = [];
+  rolesFiltered: Role[] = [];
+  selectedRoleIds: number[] = [];
+
   isEditing: boolean = false;
-  isLoading: boolean = false;
   isModalOpen: boolean = false;
 
-  employees: Employee[] = [
-    { id: 1, firstName: 'María', lastName: 'García López', dni: '12345678A', position: 'Directora General' },
-    { id: 2, firstName: 'Ana', lastName: 'Martínez Ruiz', dni: '87654321B', position: 'Especialista RH' },
-    { id: 3, firstName: 'Carlos', lastName: 'Rodríguez Sánchez', dni: '11223344C', position: 'Desarrollador' },
-    { id: 4, firstName: 'Laura', lastName: 'Sánchez Gómez', dni: '44332211D', position: 'Contadora' },
-    { id: 5, firstName: 'David', lastName: 'López Martín', dni: '55667788E', position: 'Marketing Manager' }
-  ];
-
-  constructor(
-    private fb: FormBuilder,
-    private http: HttpClient,
-    private roleService: RoleService
-  ) {
+  constructor(private fb: FormBuilder, private roleService: RoleService) {
     this.userForm = this.createForm();
   }
 
   ngOnInit() {
+    this.roleService.getAllRoles().subscribe(data => {
+    this.roles = data;
+    this.rolesFiltered = this.roles.filter(r => r.name !== 'ROLE_SUPER_ADMIN');
+    });
     this.employeeSearchControl.valueChanges.subscribe(value => {
-      this.onEmployeeSearch(value);
+    this.onEmployeeSearch(value);
     });
   }
 
   openCreateModal() {
     this.isModalOpen = true;
     this.resetForm();
+    this.filteredEmployees = [...this.employeesCanBeUsers]
   }
 
   closeModal() {
@@ -66,12 +60,11 @@ export class CreateUser implements OnInit {
 
   private resetForm() {
     this.userForm.reset();
+    this.employeeSearchControl.setValue('');
     this.selectedEmployee = null;
     this.selectedRoles = [];
-    this.employeeSearchControl.setValue('');
-    this.isEditing = false;
-    this.showEmployeeResults = false;
     this.filteredEmployees = [];
+    this.isEditing = false;
   }
 
   createForm(): FormGroup {
@@ -97,22 +90,20 @@ export class CreateUser implements OnInit {
 
   onEmployeeSearch(value: string) {
     if (value && value.length > 2) {
-      this.filteredEmployees = this.employees.filter(employee =>
+      this.filteredEmployees = this.employeesCanBeUsers.filter(employee =>
         employee.firstName.toLowerCase().includes(value.toLowerCase()) ||
         employee.lastName.toLowerCase().includes(value.toLowerCase()) ||
         employee.dni.includes(value) ||
         employee.position.toLowerCase().includes(value.toLowerCase())
       );
-      this.showEmployeeResults = true;
     } else {
       this.filteredEmployees = [];
-      this.showEmployeeResults = false;
     }
   }
 
   onEmployeeSelected(employee: Employee) {
+    console.log('Empleado seleccionado:', employee);
     this.selectedEmployee = employee;
-    this.showEmployeeResults = false;
     this.employeeSearchControl.setValue(`${employee.firstName} ${employee.lastName}`);
 
     if (!this.userForm.get('username')?.value) {
@@ -128,52 +119,43 @@ export class CreateUser implements OnInit {
   generateUsername(employee: Employee): string {
     const firstPart = employee.firstName.toLowerCase().charAt(0);
     const lastPart = employee.lastName.toLowerCase().split(' ')[0];
-    return `${firstPart}.${lastPart}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    return `${firstPart}.${lastPart}`
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
   }
 
-  onRoleChange(event: any) {
-    const role = event.target.value;
-    const isChecked = event.target.checked;
+  onRoleChange(event: any, role: any) {
+    const checked = event.target.checked;
 
-    if (isChecked) {
-      this.selectedRoles.push(role);
+    if (checked) {
+      this.selectedRoleIds.push(role.id);
     } else {
-      this.selectedRoles = this.selectedRoles.filter(r => r !== role);
+      this.selectedRoleIds = this.selectedRoleIds.filter(id => id !== role.id);
     }
+
+    this.selectedRoles = this.rolesFiltered.filter(r =>
+      this.selectedRoleIds.includes(r.id)
+    );
   }
 
   onSubmit() {
-    if (this.userForm.valid && this.selectedEmployee && this.selectedRoles.length > 0) {
-      this.isLoading = true;
-
-      const formData = {
+    if (this.userForm.valid && this.selectedEmployee && this.roles.length > 0) {
+      console.log(this.roles)
+      const dto = {
         employeeId: this.selectedEmployee.id,
         username: this.userForm.value.username,
         email: this.userForm.value.email,
         password: this.userForm.value.password,
-        roleIds: this.selectedRoles.map(role => this.getRoleId(role))
+        roles: this.roles
       };
-
-      // Simular llamada API
-      setTimeout(() => {
-        this.isLoading = false;
-        console.log('Usuario creado exitosamente');
-        this.closeModal();
-        alert('Usuario creado exitosamente');
-      }, 2000);
+      this.saveUser.emit(dto);
+      this.closeModal();
 
     } else {
+      console.error('Formulario inválido o empleado/roles no seleccionados');
       alert('Por favor complete todos los campos requeridos');
     }
-  }
-
-  getRoleId(roleName: string): Observable<number> {
-    return this.roleService.getAllRoles().pipe(
-      map(roles => {
-        const role = roles.find((r: any) => r.name === roleName);
-        return role ? role.id : 1;
-      }
-    ));
   }
 
   editUser(userData: any) {
@@ -186,8 +168,8 @@ export class CreateUser implements OnInit {
 
     this.selectedRoles = [...userData.roles];
 
-    const employee = this.employees.find(emp =>
-      emp.firstName + ' ' + emp.lastName === userData.employeeName
+    const employee = this.employeesCanBeUsers.find(
+      emp => emp.firstName + ' ' + emp.lastName === userData.employeeName
     );
 
     if (employee) {
