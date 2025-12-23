@@ -137,6 +137,7 @@ export class CreateUser implements OnInit {
     this.selectedRoles = this.rolesFiltered.filter(r =>
       this.selectedRoleIds.includes(r.id)
     );
+    console.log(this.selectedRoles)
   }
 
   onSubmit() {
@@ -147,8 +148,9 @@ export class CreateUser implements OnInit {
         username: this.userForm.value.username,
         email: this.userForm.value.email,
         password: this.userForm.value.password,
-        roles: this.roles
+        roleIds: this.selectedRoleIds
       };
+      console.log(dto)
       this.saveUser.emit(dto);
       this.closeModal();
 

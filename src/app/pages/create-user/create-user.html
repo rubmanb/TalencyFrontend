@@ -133,7 +133,7 @@
                         (change)="onRoleChange($event, role)"
                         [checked]="selectedRoleIds.includes(role.id)">
                   <label class="form-check-label">
-                    {{ role.name }}
+                    {{ role.name.replace("ROLE_", "") }}
                   </label>
                 </div>
               }
