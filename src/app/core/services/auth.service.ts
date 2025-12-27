@@ -29,22 +29,27 @@ export class AuthService {
     }
   }
 
-  login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>('/api/auth/login', { username, password })
-      .pipe(
-        tap(response => {
-          if (response.token) {
-            const user = {
-              username: response.username,
-              roles: response.roles || []
-            };
-            this.setToken(response.token);
-            this.setUser(user);
-            this.currentUserSubject.next(user);
-          }
-        })
-      );
+  // login(username: string, password: string): Observable<LoginResponse> {
+  //   return this.http.post<LoginResponse>('/api/auth/login', { username, password })
+  //     .pipe(
+  //       tap(response => {
+  //         if (response.token) {
+  //           const user = {
+  //             username: response.username,
+  //             roles: response.roles || []
+  //           };
+  //           this.setToken(response.token);
+  //           this.setUser(user);
+  //           this.currentUserSubject.next(user);
+  //         }
+  //       })
+  //     );
+  // }
+  login(username: string, password: string, company: string): Observable<LoginResponse> {
+    const composite = `${company}|${username}`;
+    return this.http.post<LoginResponse>('/api/auth/login', { username: composite, password });
   }
+
 
   logout(): void {
     this.clearSession();

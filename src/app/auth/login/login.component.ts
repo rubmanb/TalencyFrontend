@@ -35,7 +35,11 @@ export class LoginComponent {
 
     this.isLoading = true;
 
-    this.http.post<any>('http://localhost:8080/api/auth/login', this.loginData)
+    this.http.post<any>('http://localhost:8080/api/auth/login', {
+        company: this.loginData.company,
+        username: this.loginData.username,
+        password: this.loginData.password
+      })
       .subscribe({
         next: (response) => {
           this.isLoading = false;
@@ -75,10 +79,8 @@ export class LoginComponent {
   }
 
   private redirectByRole(roles: string[]) {
-    if (roles.includes('ROLE_ADMIN')) {
+    if (roles.includes('ROLE_ADMIN') || roles.includes('ROLE_HR')) {
       this.router.navigate(['/dashboard']);
-    } else if (roles.includes('ROLE_HR')) {
-      this.router.navigate(['/employees']);
     } else if (roles.includes('ROLE_EMPLOYEE')) {
       this.router.navigate(['/profile']);
     } else {
