@@ -106,6 +106,7 @@
         <div class="card-body">
           <div class="chart-container" style="height: 300px;">
             <!-- Aquí iría tu gráfico de barras/dona -->
+             <department-chart [data]="departmentReports"></department-chart>
             <div class="text-center text-muted py-5">
               <i class="bi bi-bar-chart display-4 d-block mb-2"></i>
               Gráfico de distribución
@@ -124,6 +125,7 @@
         <div class="card-body">
           <div class="chart-container" style="height: 300px;">
             <!-- Aquí iría tu gráfico de líneas -->
+             <hiring-trends-chart [trends]="hiringTrends"></hiring-trends-chart>
             <div class="text-center text-muted py-5">
               <i class="bi bi-graph-up display-4 d-block mb-2"></i>
               Gráfico de tendencias
@@ -183,7 +185,7 @@
         </div>
         <div class="card-body">
           <div class="activity-timeline">
-            <div *ngFor="let activity of recentActivities" 
+            <div *ngFor="let activity of recentActivities"
                  class="activity-item d-flex mb-3">
               <div class="activity-icon me-3">
                 <i class="bi bi-circle-fill text-primary"></i>

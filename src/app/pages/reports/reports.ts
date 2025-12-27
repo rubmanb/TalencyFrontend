@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+import { HiringTrendsChart } from "./hiring-trends-chart/hiring-trends-chart";
+import { DepartmentChart } from "./department-chart/department-chart";
 
 interface KPI {
   totalEmployees: number;
@@ -29,7 +32,7 @@ interface Activity {
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HiringTrendsChart, DepartmentChart],
   templateUrl: './reports.html',
   styleUrls: ['./reports.css']
 })
@@ -45,14 +48,16 @@ export class Reports implements OnInit {
 
   departmentReports: DepartmentReport[] = [];
   recentActivities: Activity[] = [];
-  
+
   dateRange = {
     start: this.getFirstDayOfMonth(),
     end: new Date().toISOString().split('T')[0]
   };
-  
+
   selectedReportType: string = 'general';
   isLoading: boolean = false;
+
+  hiringTrends: { date: string, newHires: number }[] = [];
 
   constructor(private http: HttpClient) {}
 
@@ -68,7 +73,15 @@ export class Reports implements OnInit {
 
   generateReport() {
     this.isLoading = true;
-    
+
+    this.hiringTrends = [
+    { date: '2025-12-01', newHires: 2 },
+    { date: '2025-12-05', newHires: 1 },
+    { date: '2025-12-10', newHires: 3 },
+    { date: '2025-12-15', newHires: 0 },
+    { date: '2025-12-20', newHires: 6 }
+  ];
+
     // Simular carga de datos - reemplazar con API real
     setTimeout(() => {
       this.kpis = {
@@ -111,7 +124,7 @@ export class Reports implements OnInit {
       dateRange: this.dateRange,
       kpis: this.kpis
     });
-    
+
     // Simular descarga
     setTimeout(() => {
       alert('Reporte exportado exitosamente');
@@ -127,4 +140,8 @@ export class Reports implements OnInit {
     };
     return titles[this.selectedReportType] || 'Reporte';
   }
+
+
+
+
 }
