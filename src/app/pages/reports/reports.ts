@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { HiringTrendsChart } from "./hiring-trends-chart/hiring-trends-chart";
 import { DepartmentChart } from "./department-chart/department-chart";
+import { DepartmentStatsService } from '../services/department-stats.service';
 
 interface KPI {
   totalEmployees: number;
@@ -59,10 +60,11 @@ export class Reports implements OnInit {
 
   hiringTrends: { date: string, newHires: number }[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private departmentStatsService: DepartmentStatsService) {}
 
   ngOnInit() {
     this.generateReport();
+    this.departmentStatsService.loadIfNeeded();
   }
 
   getFirstDayOfMonth(): string {

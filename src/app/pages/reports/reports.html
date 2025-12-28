@@ -104,13 +104,9 @@
           <h5 class="card-title mb-0">📈 Distribución por Departamento</h5>
         </div>
         <div class="card-body">
-          <div class="chart-container" style="height: 300px;">
+          <div class="chart-container-departments">
             <!-- Aquí iría tu gráfico de barras/dona -->
              <department-chart [data]="departmentReports"></department-chart>
-            <div class="text-center text-muted py-5">
-              <i class="bi bi-bar-chart display-4 d-block mb-2"></i>
-              Gráfico de distribución
-            </div>
           </div>
         </div>
       </div>
@@ -123,13 +119,9 @@
           <h5 class="card-title mb-0">📅 Tendencias de Contratación</h5>
         </div>
         <div class="card-body">
-          <div class="chart-container" style="height: 300px;">
+          <div class="chart-container-trends">
             <!-- Aquí iría tu gráfico de líneas -->
              <hiring-trends-chart [trends]="hiringTrends"></hiring-trends-chart>
-            <div class="text-center text-muted py-5">
-              <i class="bi bi-graph-up display-4 d-block mb-2"></i>
-              Gráfico de tendencias
-            </div>
           </div>
         </div>
       </div>

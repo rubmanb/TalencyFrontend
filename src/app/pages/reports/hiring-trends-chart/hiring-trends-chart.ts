@@ -15,7 +15,7 @@ interface HiringTrend {
   styleUrl: './hiring-trends-chart.css'
 })
 export class HiringTrendsChart {
-@Input() trends: HiringTrend[] = [];
+  @Input() trends: HiringTrend[] = [];
 
   chartData: ChartData<'line'> = {
     labels: [],
@@ -26,27 +26,30 @@ export class HiringTrendsChart {
         fill: true,
         borderColor: '#198754',
         backgroundColor: 'rgba(25, 135, 84, 0.2)',
-        tension: 0.3
+        tension: 0.3,
       }
     ]
   };
 
   chartOptions: ChartOptions<'line'> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: true,
         position: 'top'
-      }
+      },
     },
     scales: {
       x: {
+        display: true,
         title: {
           display: true,
           text: 'Fecha'
         }
       },
       y: {
+        display: true,
         title: {
           display: true,
           text: 'Contrataciones'

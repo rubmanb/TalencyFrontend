@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { DepartmentService } from '../../core/services/department.service';
 import { Department } from '../../interfaces/departments.interface';
 import { EmployeeService } from '../../core/services/employee.service';
+import { DepartmentStatsService } from '../services/department-stats.service';
 
 @Component({
   selector: 'app-departments',
@@ -39,6 +40,7 @@ export class Departments implements OnInit {
   constructor(
     private employeesService: EmployeeService,
     private departmentService: DepartmentService,
+    private departmentStatsService: DepartmentStatsService,
     private fb: FormBuilder
   ) {}
 
@@ -67,6 +69,7 @@ export class Departments implements OnInit {
         } as Department;
       });
 
+      this.departmentStatsService.refresh();
 
         this.filterDepartments();
         this.calculateStatistics();
