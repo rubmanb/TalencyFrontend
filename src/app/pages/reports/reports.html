@@ -35,9 +35,10 @@
           </select>
         </div>
         <div class="col-md-3 d-flex align-items-end">
-          <button class="btn btn-primary w-100" (click)="generateReport()">
+          <button class="btn btn-primary w-100" (click)="recalculateAll()">
             Generar Reporte
           </button>
+
         </div>
       </div>
     </div>
@@ -149,19 +150,21 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let dept of departmentReports">
-                  <td>{{ dept.name }}</td>
-                  <td>{{ dept.employeeCount }}</td>
-                  <td>{{ dept.newHires }}</td>
-                  <td>{{ dept.terminations }}</td>
-                  <td>
-                    <span [class.text-success]="dept.turnoverRate < 10"
-                          [class.text-warning]="dept.turnoverRate >= 10 && dept.turnoverRate < 20"
-                          [class.text-danger]="dept.turnoverRate >= 20">
-                      {{ dept.turnoverRate }}%
-                    </span>
-                  </td>
-                </tr>
+                @for (dept of departmentReports; track departmentReports) {
+                  <tr>
+                    <td>{{ dept.name }}</td>
+                    <td>{{ dept.employeeCount }}</td>
+                    <td>{{ dept.newHires }}</td>
+                    <td>{{ dept.terminations }}</td>
+                    <td>
+                      <span [class.text-success]="dept.turnoverRate < 10"
+                            [class.text-warning]="dept.turnoverRate >= 10 && dept.turnoverRate < 20"
+                            [class.text-danger]="dept.turnoverRate >= 20">
+                        {{ dept.turnoverRate }}%
+                      </span>
+                    </td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>
@@ -177,16 +180,17 @@
         </div>
         <div class="card-body">
           <div class="activity-timeline">
-            <div *ngFor="let activity of recentActivities"
-                 class="activity-item d-flex mb-3">
-              <div class="activity-icon me-3">
-                <i class="bi bi-circle-fill text-primary"></i>
+            @for (activity of recentActivities; track recentActivities) {
+              <div class="activity-item d-flex mb-3">
+                <div class="activity-icon me-3">
+                  <i class="bi bi-circle-fill text-primary"></i>
+                </div>
+                <div class="activity-content flex-grow-1">
+                  <div class="fw-bold">{{ activity.description }}</div>
+                  <small class="text-muted">{{ activity.timestamp | date:'medium' }}</small>
+                </div>
               </div>
-              <div class="activity-content flex-grow-1">
-                <div class="fw-bold">{{ activity.description }}</div>
-                <small class="text-muted">{{ activity.timestamp | date:'medium' }}</small>
-              </div>
-            </div>
+            }
           </div>
         </div>
       </div>
