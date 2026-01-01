@@ -80,11 +80,11 @@ export class LoginComponent implements OnInit {
 
     if (roles.includes('ADMIN') || roles.includes('HR')) {
       this.router.navigate(['/dashboard']);
-    } else if (roles.includes('EMPLOYEE')) {
-      this.router.navigate(['/profile']);
-    } else {
-      // Rol por defecto
-      this.router.navigate(['/dashboard']);
+      // } else if (roles.includes('EMPLOYEE')) {
+      //   this.router.navigate(['/profile']);
+      // } else {
+      //   // Rol por defecto
+      //   this.router.navigate(['/dashboard']);
     }
   }
 

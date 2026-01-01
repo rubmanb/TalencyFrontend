@@ -84,8 +84,6 @@ export class Users implements OnInit, AfterViewInit {
           );
         });
 
-        console.log('👥 Empleados que pueden ser usuarios:', this.employeesCanBeUsers);
-
         // actualizar stats / UI
         this.filteredUsers = [...this.users];
         this.calculateStats();

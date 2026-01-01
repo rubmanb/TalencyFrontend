@@ -42,7 +42,6 @@ export class AuthService {
    */
   login(company: string, username: string, password: string): Observable<AuthResponse> {
     const authRequest: AuthRequest = { company, username, password };
-
     return this.http.post<AuthResponse>(`${this.API_URL}/login`, authRequest).pipe(
       tap((response) => {
         this.saveSession(response, username, company);

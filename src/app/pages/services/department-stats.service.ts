@@ -9,11 +9,10 @@ export interface DepartmentChartData {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DepartmentStatsService {
-
-   private chartDataSubject = new BehaviorSubject<DepartmentChartData[]>([]);
+  private chartDataSubject = new BehaviorSubject<DepartmentChartData[]>([]);
   chartData$ = this.chartDataSubject.asObservable();
 
   private loaded = false;
@@ -28,10 +27,9 @@ export class DepartmentStatsService {
 
     forkJoin({
       departments: this.departmentService.getAllDepartments(),
-      employees: this.employeeService.getAll()
+      employees: this.employeeService.getAll(),
     }).subscribe({
       next: ({ departments, employees }) => {
-
         const countMap = new Map<number, number>();
 
         for (const e of employees) {
@@ -40,17 +38,17 @@ export class DepartmentStatsService {
           countMap.set(id, (countMap.get(id) || 0) + 1);
         }
 
-        const chartData = departments.map(d => ({
+        const chartData = departments.map((d) => ({
           name: d.name,
-          employeeCount: countMap.get(d.id!) || 0
+          employeeCount: countMap.get(d.id!) || 0,
         }));
 
         this.chartDataSubject.next(chartData);
         this.loaded = true;
       },
-      error: err => {
+      error: (err) => {
         console.error('Error loading department stats', err);
-      }
+      },
     });
   }
 

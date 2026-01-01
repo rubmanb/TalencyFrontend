@@ -2,7 +2,13 @@ import { Employee } from './../../interfaces/employee.interface';
 import { map } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { DepartmentService } from '../../core/services/department.service';
 import { Department } from '../../interfaces/departments.interface';
 import { EmployeeService } from '../../core/services/employee.service';
@@ -13,7 +19,7 @@ import { DepartmentStatsService } from '../services/department-stats.service';
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './departments.html',
-  styleUrls: ['./departments.css']
+  styleUrls: ['./departments.css'],
 })
 export class Departments implements OnInit {
   departments: Department[] = [];
@@ -51,33 +57,34 @@ export class Departments implements OnInit {
 
   initForm() {
     this.departmentForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(2)]]
+      name: ['', [Validators.required, Validators.minLength(2)]],
     });
   }
 
   private loadDepartments() {
-    this.departmentService.getAllDepartments().pipe(
-      map(depts => depts.map(d => ({ ...d })))
-    ).subscribe({
-      next: (departments) => {
-        this.departments = departments.map(d => {
-        const count = this.employeesCountByDept.get(d.id) || 0;
-        return {
-          ...d,
-          employeeCount: count,
-          managerName: d.managerName
-        } as Department;
+    this.departmentService
+      .getAllDepartments()
+      .pipe(map((depts) => depts.map((d) => ({ ...d }))))
+      .subscribe({
+        next: (departments) => {
+          this.departments = departments.map((d) => {
+            const count = this.employeesCountByDept.get(d.id) || 0;
+            return {
+              ...d,
+              employeeCount: count,
+              managerName: d.managerName,
+            } as Department;
+          });
+
+          this.departmentStatsService.refresh();
+
+          this.filterDepartments();
+          this.calculateStatistics();
+        },
+        error: (error) => {
+          console.error('Error cargando departamentos:', error);
+        },
       });
-
-      this.departmentStatsService.refresh();
-
-        this.filterDepartments();
-        this.calculateStatistics();
-      },
-      error: (error) => {
-        console.error('Error cargando departamentos:', error);
-      }
-    });
   }
 
   openCreateModal() {
@@ -92,7 +99,7 @@ export class Departments implements OnInit {
     this.isEditing = true;
     this.editingId = department.id!;
     this.departmentForm.patchValue({
-      name: department.name
+      name: department.name,
     });
   }
 
@@ -114,7 +121,7 @@ export class Departments implements OnInit {
     if (this.isEditing && this.editingId) {
       this.departmentService.updateDepartment(this.editingId, formData).subscribe({
         next: (updatedDepartment) => {
-          const index = this.departments.findIndex(dept => dept.id === this.editingId);
+          const index = this.departments.findIndex((dept) => dept.id === this.editingId);
           if (index !== -1) {
             this.departments[index] = updatedDepartment;
           }
@@ -125,7 +132,7 @@ export class Departments implements OnInit {
         error: (error) => {
           console.error('Error actualizando departamento:', error);
           alert('Error al actualizar el departamento');
-        }
+        },
       });
     } else {
       this.departmentService.createDepartment(formData).subscribe({
@@ -138,22 +145,23 @@ export class Departments implements OnInit {
         error: (error) => {
           console.error('Error creando departamento:', error);
           alert('Error al crear el departamento');
-        }
+        },
       });
     }
   }
 
   filterDepartments() {
     this.filteredDepartments = this.departments
-    .filter(dept => {
-      const matchesSearch = !this.searchTerm || dept.name.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchesFilter = !this.filterActive || dept.active !== false;
-      return matchesSearch && matchesFilter;
-    })
-    .map(dept => ({
-      ...dept,
-      managerName: dept.managerName,
-    }));
+      .filter((dept) => {
+        const matchesSearch =
+          !this.searchTerm || dept.name.toLowerCase().includes(this.searchTerm.toLowerCase());
+        const matchesFilter = !this.filterActive || dept.active !== false;
+        return matchesSearch && matchesFilter;
+      })
+      .map((dept) => ({
+        ...dept,
+        managerName: dept.managerName,
+      }));
   }
 
   toggleActiveFilter() {
@@ -163,9 +171,14 @@ export class Departments implements OnInit {
 
   private calculateStatistics() {
     this.totalDepartments = this.departments.length;
-    this.activeDepartments = this.departments.filter(dept => (dept as any).active !== false).length;
-    this.totalEmployees = this.employeesList.length || this.departments.reduce((sum, d) => sum + (d.employeeCount || 0), 0);
-    this.avgEmployeesPerDept = this.totalDepartments > 0 ? this.totalEmployees / this.totalDepartments : 0;
+    this.activeDepartments = this.departments.filter(
+      (dept) => (dept as any).active !== false
+    ).length;
+    this.totalEmployees =
+      this.employeesList.length ||
+      this.departments.reduce((sum, d) => sum + (d.employeeCount || 0), 0);
+    this.avgEmployeesPerDept =
+      this.totalDepartments > 0 ? this.totalEmployees / this.totalDepartments : 0;
   }
 
   editDepartment(department: Department) {
@@ -181,39 +194,40 @@ export class Departments implements OnInit {
     if (confirm('¿Estás seguro de que quieres eliminar este departamento?')) {
       this.departmentService.deleteDepartment(id).subscribe({
         next: () => {
-          this.departments = this.departments.filter(dept => dept.id !== id);
+          this.departments = this.departments.filter((dept) => dept.id !== id);
           this.filterDepartments();
           this.calculateStatistics();
         },
         error: (error) => {
           console.error('Error eliminando departamento:', error);
           alert('Error al eliminar el departamento');
-        }
+        },
       });
     }
   }
 
   private markAllFieldsAsTouched() {
-    Object.keys(this.departmentForm.controls).forEach(key => {
+    Object.keys(this.departmentForm.controls).forEach((key) => {
       this.departmentForm.get(key)?.markAsTouched();
     });
   }
 
   private loadEmployeesThenDepartments() {
-    this.employeesService.getAll().pipe(
-      map(emp => emp || [])
-    ).subscribe({
-      next: (emp) => {
-        this.employeesList = emp;
-        this.buildEmployeesCountMap();
-        this.loadDepartments();
-        this.totalEmployees = this.employeesList.length;
-      },
-      error: (err) => {
-        console.error('Error cargando empleados:', err);
-        this.loadDepartments();
-      }
-    });
+    this.employeesService
+      .getAll()
+      .pipe(map((emp) => emp || []))
+      .subscribe({
+        next: (emp) => {
+          this.employeesList = emp;
+          this.buildEmployeesCountMap();
+          this.loadDepartments();
+          this.totalEmployees = this.employeesList.length;
+        },
+        error: (err) => {
+          console.error('Error cargando empleados:', err);
+          this.loadDepartments();
+        },
+      });
   }
 
   private buildEmployeesCountMap() {

@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { tap } from 'rxjs';
 
 import { Employee } from '../../interfaces/employee.interface';
@@ -11,12 +17,9 @@ import { DepartmentService } from '../../core/services/department.service';
   selector: 'employees',
   templateUrl: './employees.component.html',
   styleUrls: ['./employees.component.css'],
-  imports: [
-    CommonModule, FormsModule, ReactiveFormsModule
-  ]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
 })
 export class Employees implements OnInit {
-
   employees: Employee[] = [];
   employeeForm!: FormGroup;
   editingId: number | null = null;
@@ -24,7 +27,7 @@ export class Employees implements OnInit {
   filteredEmployees: Employee[] = [];
   activeTab: string = 'list';
 
-  departments: { id: number, name: string }[] = [];
+  departments: { id: number; name: string }[] = [];
   departmentsNames: string[] = [];
   departmentsLoaded: boolean = false;
 
@@ -90,41 +93,47 @@ export class Employees implements OnInit {
       iban: ['', Validators.pattern(/^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$/)],
 
       // Estado
-      active: [true]
+      active: [true],
     });
   }
 
   loadEmployees() {
     this.isLoading = true;
-    this.employeeService.getAll().pipe(
-      tap((employees: Employee[]) => {
-        this.employees = employees;
-        this.filteredEmployees = employees;
-        this.isLoading = false;
-      })
-    ).subscribe({
-      error: (error) => {
-        console.error('Error cargando empleados:', error);
-        this.isLoading = false;
-      }
-    });
+    this.employeeService
+      .getAll()
+      .pipe(
+        tap((employees: Employee[]) => {
+          this.employees = employees;
+          this.filteredEmployees = employees;
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        error: (error) => {
+          console.error('Error cargando empleados:', error);
+          this.isLoading = false;
+        },
+      });
   }
 
   loadDepartments() {
     this.isLoading = true;
-    this.deparmentService.getAllDepartments().pipe(
-      tap((data) => {
-        this.departments = data.map(d => ({ id: Number(d.id), name: d.name }));
-        this.departmentsNames = this.departments.map(d => d.name);
-        this.departmentsLoaded = true;
-        this.isLoading = false;
-      })
-    ).subscribe({
-      error: (error) => {
-        console.error('Error cargando departamentos:', error);
-        this.isLoading = false;
-      }
-    });
+    this.deparmentService
+      .getAllDepartments()
+      .pipe(
+        tap((data) => {
+          this.departments = data.map((d) => ({ id: Number(d.id), name: d.name }));
+          this.departmentsNames = this.departments.map((d) => d.name);
+          this.departmentsLoaded = true;
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        error: (error) => {
+          console.error('Error cargando departamentos:', error);
+          this.isLoading = false;
+        },
+      });
   }
 
   submitForm() {
@@ -137,7 +146,7 @@ export class Employees implements OnInit {
 
     const employee: Employee = {
       ...formValue,
-      departmentId: formValue.department_id
+      departmentId: formValue.department_id,
     };
 
     if (this.editingId) {
@@ -158,20 +167,23 @@ export class Employees implements OnInit {
   editEmployee(emp: Employee) {
     this.editingId = emp.id!;
 
-    const rawDeptId = (emp as any).department_id ?? (emp as any).departmentId ?? (emp as any).department?.id;
+    const rawDeptId =
+      (emp as any).department_id ?? (emp as any).departmentId ?? (emp as any).department?.id;
     const empDeptId = rawDeptId === null || rawDeptId === undefined ? null : Number(rawDeptId);
 
-    const patchEmployeeToForm = (departmentFound?: { id: number, name: string } | null) => {
+    const patchEmployeeToForm = (departmentFound?: { id: number; name: string } | null) => {
       const formattedEmp = {
         ...emp,
         dateOfBirth: emp.dateOfBirth ? this.formatDateForInput(emp.dateOfBirth) : '',
-        contractExpireDate: emp.contractExpireDate ? this.formatDateForInput(emp.contractExpireDate) : '',
+        contractExpireDate: emp.contractExpireDate
+          ? this.formatDateForInput(emp.contractExpireDate)
+          : '',
         hireDate: emp.hireDate ? this.formatDateForInput(emp.hireDate) : '',
         fireDate: emp.fireDate ? this.formatDateForInput(emp.fireDate) : '',
 
         department_id: empDeptId,
 
-        department_name: departmentFound ? departmentFound.name : ''
+        department_name: departmentFound ? departmentFound.name : '',
       };
 
       console.log('Empleado seleccionado (formateado):', formattedEmp);
@@ -180,30 +192,35 @@ export class Employees implements OnInit {
     };
 
     if (this.departmentsLoaded) {
-      const department = empDeptId !== null ? this.departments.find(d => d.id === empDeptId) : undefined;
+      const department =
+        empDeptId !== null ? this.departments.find((d) => d.id === empDeptId) : undefined;
       console.log('Departamento encontrado (sync):', department);
       patchEmployeeToForm(department ?? null);
       return;
     }
 
     console.log('Departamentos no cargados todavía — cargando antes de parchear...');
-    this.deparmentService.getAllDepartments().pipe(
-      tap((data) => {
-        this.departments = data.map(d => ({ id: Number(d.id), name: d.name }));
-        this.departmentsNames = this.departments.map(d => d.name);
-        this.departmentsLoaded = true;
-      })
-    ).subscribe({
-      next: () => {
-        const department = empDeptId !== null ? this.departments.find(d => d.id === empDeptId) : undefined;
-        console.log('Departamento encontrado (after load):', department);
-        patchEmployeeToForm(department ?? null);
-      },
-      error: (err) => {
-        console.error('Error cargando departamentos en editEmployee:', err);
-        patchEmployeeToForm(null);
-      }
-    });
+    this.deparmentService
+      .getAllDepartments()
+      .pipe(
+        tap((data) => {
+          this.departments = data.map((d) => ({ id: Number(d.id), name: d.name }));
+          this.departmentsNames = this.departments.map((d) => d.name);
+          this.departmentsLoaded = true;
+        })
+      )
+      .subscribe({
+        next: () => {
+          const department =
+            empDeptId !== null ? this.departments.find((d) => d.id === empDeptId) : undefined;
+          console.log('Departamento encontrado (after load):', department);
+          patchEmployeeToForm(department ?? null);
+        },
+        error: (err) => {
+          console.error('Error cargando departamentos en editEmployee:', err);
+          patchEmployeeToForm(null);
+        },
+      });
   }
 
   deleteEmployee(id: number) {
@@ -220,7 +237,7 @@ export class Employees implements OnInit {
       active: true,
       vacationsDaysAllocated: 0,
       vacationsDaysUsed: 0,
-      department_name: ''
+      department_name: '',
     });
   }
 
@@ -229,11 +246,12 @@ export class Employees implements OnInit {
       this.filteredEmployees = [...this.employees];
     } else {
       const t = this.searchText.toLowerCase();
-      this.filteredEmployees = this.employees.filter((emp) =>
-        emp.dni?.toLowerCase().includes(t) ||
-        emp.firstName?.toLowerCase().includes(t) ||
-        emp.lastName?.toLowerCase().includes(t) ||
-        emp.position?.toLowerCase().includes(t)
+      this.filteredEmployees = this.employees.filter(
+        (emp) =>
+          emp.dni?.toLowerCase().includes(t) ||
+          emp.firstName?.toLowerCase().includes(t) ||
+          emp.lastName?.toLowerCase().includes(t) ||
+          emp.position?.toLowerCase().includes(t)
       );
     }
   }
@@ -250,7 +268,7 @@ export class Employees implements OnInit {
   }
 
   private markAllFieldsAsTouched() {
-    Object.keys(this.employeeForm.controls).forEach(key => {
+    Object.keys(this.employeeForm.controls).forEach((key) => {
       this.employeeForm.get(key)?.markAsTouched();
     });
   }
