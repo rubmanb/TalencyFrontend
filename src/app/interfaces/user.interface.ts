@@ -1,4 +1,4 @@
-interface User {
+export interface User {
   id: number;
   username: string;
   email: string;
@@ -7,4 +7,8 @@ interface User {
   lastLogin?: string;
   active: boolean;
   createdAt: string;
+  company?: {
+    id: number;
+    name: string;
+  };
 }

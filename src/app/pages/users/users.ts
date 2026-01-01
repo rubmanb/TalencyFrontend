@@ -11,16 +11,16 @@ import { Employee } from '../../interfaces/employee.interface';
 import { DepartmentService } from '../../core/services/department.service';
 import { forkJoin, Observable } from 'rxjs';
 import { UserRequestDTO } from '../../core/dto/user-request.dto';
+import { User } from '../../interfaces/user.interface';
 
 @Component({
   selector: 'app-users',
   standalone: true,
   imports: [CommonModule, FormsModule, CreateUser],
   templateUrl: './users.html',
-  styleUrls: ['./users.css']
+  styleUrls: ['./users.css'],
 })
 export class Users implements OnInit, AfterViewInit {
-
   @ViewChild(CreateUser) createUserModal!: CreateUser;
 
   users: UserResponseDTO[] = [];
@@ -41,11 +41,10 @@ export class Users implements OnInit, AfterViewInit {
     admins: 0,
     hr: 0,
     employees: 0,
-    inactive: 0
+    inactive: 0,
   };
 
   allowedDepartmentIds: number[] = [];
-
 
   constructor(
     private authService: AuthService,
@@ -67,23 +66,23 @@ export class Users implements OnInit, AfterViewInit {
     forkJoin({
       departments: this.departmentService.getAllDepartments(),
       employees: this.employeeService.getAll(),
-      users: this.userService.getAllUsers()
+      users: this.userService.getAllUsers(),
     }).subscribe({
       next: ({ departments, employees, users }) => {
-
         this.users = users;
 
         const allowedNames = ['dirección', 'direccion', 'recursos humanos'];
         this.allowedDepartmentIds = departments
-          .filter(d => allowedNames.includes((d.name || '').trim().toLowerCase()))
-          .map(d => d.id);
+          .filter((d) => allowedNames.includes((d.name || '').trim().toLowerCase()))
+          .map((d) => d.id);
 
-        this.employeesCanBeUsers = (employees || [])
-          .filter(emp => {
-            const deptId = emp.department_id ?? null;
-            const empHasUser = (this.users || []).some(u => u.employeeId === emp.id);
-            return !empHasUser && deptId !== null && this.allowedDepartmentIds.includes(Number(deptId));
-          });
+        this.employeesCanBeUsers = (employees || []).filter((emp) => {
+          const deptId = emp.department_id ?? null;
+          const empHasUser = (this.users || []).some((u) => u.employeeId === emp.id);
+          return (
+            !empHasUser && deptId !== null && this.allowedDepartmentIds.includes(Number(deptId))
+          );
+        });
 
         console.log('👥 Empleados que pueden ser usuarios:', this.employeesCanBeUsers);
 
@@ -94,20 +93,23 @@ export class Users implements OnInit, AfterViewInit {
       error: (err) => {
         console.error('Error cargando datos para users/employees/departments:', err);
         // fallback: intentar cargar por separado o mostrar mensaje
-      }
+      },
     });
   }
 
   filterUsers() {
-    this.filteredUsers = this.users.filter(user => {
-      const matchesSearch = !this.searchTerm ||
+    this.filteredUsers = this.users.filter((user) => {
+      const matchesSearch =
+        !this.searchTerm ||
         user.username.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        (user.employeeName && user.employeeName.toLowerCase().includes(this.searchTerm.toLowerCase()));
+        (user.employeeName &&
+          user.employeeName.toLowerCase().includes(this.searchTerm.toLowerCase()));
 
       const matchesRole = !this.roleFilter || user.roles.includes(this.roleFilter);
 
-      const matchesStatus = !this.statusFilter ||
+      const matchesStatus =
+        !this.statusFilter ||
         (this.statusFilter === 'active' && user.active) ||
         (this.statusFilter === 'inactive' && !user.active);
 
@@ -120,19 +122,19 @@ export class Users implements OnInit, AfterViewInit {
   calculateStats() {
     this.userStats = {
       total: this.users.length,
-      active: this.users.filter(user => user.active).length,
-      admins: this.users.filter(user => user.roles.includes('ROLE_ADMIN')).length,
-      hr: this.users.filter(user => user.roles.includes('ROLE_HR')).length,
-      employees: this.users.filter(user => user.roles.includes('ROLE_EMPLOYEE')).length,
-      inactive: this.users.filter(user => !user.active).length
+      active: this.users.filter((user) => user.active).length,
+      admins: this.users.filter((user) => user.roles.includes('ROLE_ADMIN')).length,
+      hr: this.users.filter((user) => user.roles.includes('ROLE_HR')).length,
+      employees: this.users.filter((user) => user.roles.includes('ROLE_EMPLOYEE')).length,
+      inactive: this.users.filter((user) => !user.active).length,
     };
   }
 
   getRoleDisplayName(role: string): string {
     const roleNames: { [key: string]: string } = {
-      'ROLE_ADMIN': 'Admin',
-      'ROLE_HR': 'RH',
-      'ROLE_EMPLOYEE': 'Empleado'
+      ROLE_ADMIN: 'Admin',
+      ROLE_HR: 'RH',
+      ROLE_EMPLOYEE: 'Empleado',
     };
     return roleNames[role] || role;
   }
@@ -201,7 +203,7 @@ export class Users implements OnInit, AfterViewInit {
         alert('Usuario creado');
         this.loadDepartmentsEmployeesAndUsers(); // refrescar
       },
-      error: err => console.error('Error creating user', err)
+      error: (err) => console.error('Error creating user', err),
     });
   }
 }
