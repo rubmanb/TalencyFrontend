@@ -1,156 +1,144 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+
+type NotificationEventKey = 'employeeLifecycle' | 'vacations' | 'security';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './settings.html',
-  styleUrls: ['./settings.css']
+  styleUrls: ['./settings.css'],
 })
 export class Settings implements OnInit {
   activeTab: string = 'general';
-  
-  settings: GeneralSettings = {
+  isLoading = false;
+  hasUnsavedChanges = false;
+  showApiKey = false;
+
+  // ───────────────
+  // GENERAL
+  // ───────────────
+  general = {
     companyName: 'Talency HR',
     timezone: 'Europe/Madrid',
     language: 'es',
     dateFormat: 'dd/MM/yyyy',
-    autoLogout: true,
-    maintenanceMode: false
+    email: 'admin@empresa.com',
+    taxId: 'B12345678',
+    address: 'Calle Falsa 123, Madrid, España',
+    phone: '+34 600 123 456',
+    city: 'Madrid',
+    country: 'España',
+    suscriptionPlan: 'Pro', // Free, Pro, Enterprise
   };
 
-  security: SecuritySettings = {
-    minPasswordLength: 8,
-    passwordExpiryDays: 90,
-    requireSpecialChars: true,
-    requireNumbers: true,
+  // ───────────────
+  // SECURITY (SIMPLIFICADO)
+  // ───────────────
+  security = {
     twoFactorAuth: false,
-    loginAttemptsLimit: true
   };
 
-  notifications: NotificationSettings = {
-    email: {
-      newEmployee: true,
-      employeeTermination: true,
-      vacationRequests: true
+  // ───────────────
+  // NOTIFICATIONS (HR CENTRIC)
+  // ───────────────
+  notifications: {
+    events: Record<NotificationEventKey, boolean>;
+    channels: {
+      email: boolean;
+      inApp: boolean;
+    };
+  } = {
+    events: {
+      employeeLifecycle: true,
+      vacations: true,
+      security: true,
     },
-    system: {
-      updates: true,
-      securityAlerts: true
-    }
+    channels: {
+      email: true,
+      inApp: true,
+    },
   };
 
-  backup: BackupSettings = {
-    frequency: 'weekly',
-    maxBackups: 10,
-    lastBackup: '2024-10-03T23:00:00'
+  notificationEventList: { key: NotificationEventKey; label: string }[] = [
+    { key: 'employeeLifecycle', label: 'Altas y bajas de empleados' },
+    { key: 'vacations', label: 'Vacaciones' },
+    { key: 'security', label: 'Alertas de seguridad' },
+  ];
+
+  // ───────────────
+  // BACKUP (READ ONLY INFO)
+  // ───────────────
+  backup = {
+    policy: 'Backups diarios automáticos (retención 30 días)',
+    lastBackup: '2024-10-03T23:00:00',
   };
 
-  api: ApiSettings = {
-    enabled: true,
-    key: 'sk_live_abc123def456ghi789',
-    rateLimit: 100
+  // ───────────────
+  // API (INTEGRATIONS)
+  // ───────────────
+  api = {
+    enabled: false,
+    key: 'sk_live_xxxxxxxxxxxxxxxxx',
+    rateLimit: 100,
+    lastUsed: 'Nunca',
+    scopes: {
+      readEmployees: true,
+      readAnalytics: true,
+      writeEmployees: false,
+    },
   };
 
-  showApiKey: boolean = false;
-  hasUnsavedChanges: boolean = false;
-
-  // Almacenar valores originales para reset
-  private originalSettings: any;
-
-  constructor(private http: HttpClient) {}
+  private originalState: any;
 
   ngOnInit() {
-    this.loadSettings();
-    // Guardar valores originales
-    this.originalSettings = {
-      settings: { ...this.settings },
-      security: { ...this.security },
-      notifications: { ...this.notifications },
-      backup: { ...this.backup },
-      api: { ...this.api }
-    };
-  }
-
-  loadSettings() {
-    // Simular carga de configuración - reemplazar con API real
-    console.log('Cargando configuración del sistema...');
+    this.originalState = JSON.parse(JSON.stringify(this));
   }
 
   setActiveTab(tab: string) {
     this.activeTab = tab;
   }
 
-  onSettingChange() {
+  onChange() {
     this.hasUnsavedChanges = true;
   }
 
   saveSettings() {
     this.isLoading = true;
-    
-    // Simular guardado - reemplazar con API real
+
     setTimeout(() => {
-      console.log('Guardando configuración:', {
-        general: this.settings,
+      console.log('Settings guardados:', {
+        general: this.general,
         security: this.security,
         notifications: this.notifications,
-        backup: this.backup,
-        api: this.api
+        api: this.api,
       });
-      
-      this.originalSettings = {
-        settings: { ...this.settings },
-        security: { ...this.security },
-        notifications: { ...this.notifications },
-        backup: { ...this.backup },
-        api: { ...this.api }
-      };
-      
+
+      this.originalState = JSON.parse(JSON.stringify(this));
       this.hasUnsavedChanges = false;
       this.isLoading = false;
-      alert('Configuración guardada exitosamente');
+
+      alert('Configuración guardada correctamente');
     }, 1000);
   }
 
   resetSettings() {
-    if (confirm('¿Estás seguro de que quieres restablecer todos los cambios?')) {
-      this.settings = { ...this.originalSettings.settings };
-      this.security = { ...this.originalSettings.security };
-      this.notifications = { ...this.originalSettings.notifications };
-      this.backup = { ...this.originalSettings.backup };
-      this.api = { ...this.originalSettings.api };
-      this.hasUnsavedChanges = false;
-    }
-  }
+    if (!confirm('¿Restablecer cambios no guardados?')) return;
 
-  createBackup() {
-    if (confirm('¿Crear backup del sistema ahora?')) {
-      this.isLoading = true;
-      
-      setTimeout(() => {
-        this.backup.lastBackup = new Date().toISOString();
-        this.isLoading = false;
-        alert('Backup creado exitosamente');
-      }, 2000);
-    }
-  }
-
-  restoreBackup() {
-    alert('Funcionalidad de restauración de backup - Por implementar');
+    Object.assign(this, JSON.parse(JSON.stringify(this.originalState)));
+    this.hasUnsavedChanges = false;
   }
 
   generateApiKey() {
-    if (confirm('¿Generar nueva API Key? La clave actual dejará de funcionar.')) {
-      const newKey = 'sk_live_' + Math.random().toString(36).substr(2, 16) + Math.random().toString(36).substr(2, 16);
-      this.api.key = newKey;
-      this.hasUnsavedChanges = true;
-      alert('Nueva API Key generada');
-    }
-  }
+    if (!confirm('¿Generar una nueva API Key? La anterior dejará de funcionar.')) return;
 
-  // Helper para mostrar loading states
-  isLoading: boolean = false;
+    this.api.key =
+      'sk_live_' +
+      Math.random().toString(36).substring(2) +
+      Math.random().toString(36).substring(2);
+
+    this.hasUnsavedChanges = true;
+  }
 }

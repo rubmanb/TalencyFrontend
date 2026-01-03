@@ -1,0 +1,136 @@
+<div class="container-fluid vh-150 bg-light">
+  <div class="row h-100 justify-content-center align-items-center">
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card shadow-lg border-0">
+        <!-- Header -->
+        <div class="card-header bg-primary text-white text-center py-4">
+          <i class="bi bi-person-plus display-4 mb-3"></i>
+          <h2 class="h3 mb-0">Crear Cuenta</h2>
+          <p class="mb-0 opacity-75">Empieza a gestionar tu equipo con Talency</p>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body p-4">
+          <form (ngSubmit)="onRegister()" #registerForm="ngForm">
+            <!-- Company -->
+            <div class="mb-3">
+              <label class="form-label"> <i class="bi bi-building me-2"></i>Compañía </label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                name="company"
+                [(ngModel)]="registerData.company"
+                required
+                placeholder="Nombre de tu empresa"
+              />
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label class="form-label"> <i class="bi bi-envelope me-2"></i>Email </label>
+              <input
+                type="email"
+                class="form-control form-control-lg"
+                name="email"
+                [(ngModel)]="registerData.email"
+                required
+                placeholder="tu@email.com"
+              />
+            </div>
+
+            <!-- UserName -->
+            <div class="mb-3">
+              <label class="form-label"> <i class="bi bi-envelope me-2"></i>Username </label>
+              <input
+                type="email"
+                class="form-control form-control-lg"
+                name="email"
+                [(ngModel)]="registerData.username"
+                required
+                placeholder="username"
+              />
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label class="form-label"> <i class="bi bi-key me-2"></i>Contraseña </label>
+              <input
+                type="password"
+                class="form-control form-control-lg"
+                name="password"
+                [(ngModel)]="registerData.password"
+                required
+                placeholder="Crea una contraseña segura"
+              />
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-4">
+              <label class="form-label">
+                <i class="bi bi-shield-check me-2"></i>Confirmar contraseña
+              </label>
+              <input
+                type="password"
+                class="form-control form-control-lg"
+                name="confirmPassword"
+                [(ngModel)]="registerData.confirmPassword"
+                required
+                placeholder="Repite la contraseña"
+              />
+            </div>
+
+            <!-- Suscription Plan -->
+            <div class="mb-4">
+              <label class="form-label">
+                <i class="bi bi-shield-check me-2"></i>Plan de suscripción
+              </label>
+              <select
+                class="form-select form-select-lg"
+                name="suscriptionPlan"
+                [(ngModel)]="registerData.suscriptionPlan"
+                required
+              >
+                <option value="" disabled selected>Selecciona un plan</option>
+                <option value="Free">Free</option>
+                <option value="Pro">Pro</option>
+                <option value="Enterprise">Enterprise</option>
+              </select>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary btn-lg w-100 py-2" [disabled]="isLoading">
+              @if (!isLoading) {
+              <span> <i class="bi bi-check-circle me-2"></i>Crear cuenta </span>
+              } @else {
+              <span>
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Creando cuenta...
+              </span>
+              }
+            </button>
+          </form>
+
+          <!-- Error -->
+          @if (errorMessage) {
+          <div class="alert alert-danger mt-3">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            {{ errorMessage }}
+          </div>
+          }
+        </div>
+
+        <!-- Footer -->
+        <div class="note-register">
+          <p class="text-center mb-0 py-2">
+            ¿Ya tienes cuenta?
+            <a [routerLink]="['/login']" class="text-primary fw-bold"> Inicia sesión </a>
+          </p>
+        </div>
+
+        <div class="card-footer text-center py-3">
+          <small class="text-muted"> &copy; 2024 Talency HR System </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

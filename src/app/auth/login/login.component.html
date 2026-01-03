@@ -23,7 +23,8 @@
                 [(ngModel)]="loginData.company"
                 required
                 placeholder="Ingresa el nombre de la compañía"
-                [class.is-invalid]="errorMessage && !loginData.company">
+                [class.is-invalid]="errorMessage && !loginData.company"
+              />
             </div>
 
             <!-- Username -->
@@ -39,7 +40,8 @@
                 [(ngModel)]="loginData.username"
                 required
                 placeholder="Ingresa tu usuario"
-                [class.is-invalid]="errorMessage && !loginData.username">
+                [class.is-invalid]="errorMessage && !loginData.username"
+              />
             </div>
 
             <!-- Password -->
@@ -55,7 +57,8 @@
                 [(ngModel)]="loginData.password"
                 required
                 placeholder="Ingresa tu contraseña"
-                [class.is-invalid]="errorMessage && !loginData.password">
+                [class.is-invalid]="errorMessage && !loginData.password"
+              />
             </div>
 
             <!-- Submit Button -->
@@ -63,27 +66,26 @@
               type="submit"
               class="btn btn-primary btn-lg w-100 py-2"
               [disabled]="isLoading"
-              [class.btn-loading]="isLoading">
+              [class.btn-loading]="isLoading"
+            >
               @if (!isLoading) {
-                <span>
-                  <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
-                </span>
+              <span> <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión </span>
               } @else {
-                <span>
-                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                  Iniciando sesión...
-                </span>
+              <span>
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Iniciando sesión...
+              </span>
               }
             </button>
           </form>
 
           <!-- Error Message -->
           @if (errorMessage) {
-            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-              <i class="bi bi-exclamation-triangle me-2"></i>
-              {{ errorMessage }}
-              <button type="button" class="btn-close" (click)="errorMessage = null"></button>
-            </div>
+          <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            {{ errorMessage }}
+            <button type="button" class="btn-close" (click)="errorMessage = null"></button>
+          </div>
           }
 
           <!-- Test Credentials -->
@@ -93,19 +95,48 @@
             </h6>
             <div class="row">
               <div class="col-12 mb-2">
-                <small class="text-dark fw-bold">Company:</small><br>
+                <small class="text-dark fw-bold">Company:</small><br />
                 <code class="text-primary">Company</code>
               </div>
               <div class="col-12 mb-2">
-                <small class="text-dark fw-bold">Administrador:</small><br>
-                <code class="text-primary">admin.maria</code> / <code class="text-primary">admin123</code>
+                <small class="text-dark fw-bold">Administrador:</small><br />
+                <code class="text-primary">admin.maria</code> /
+                <code class="text-primary">admin123</code>
               </div>
               <div class="col-12">
-                <small class="text-dark fw-bold">Recursos Humanos:</small><br>
+                <small class="text-dark fw-bold">Recursos Humanos:</small><br />
                 <code class="text-primary">rh.ana</code> / <code class="text-primary">ana123</code>
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="note-register">
+          <p class="text-center mb-0 py-2">
+            ¿No tienes una cuenta?
+            <a
+              [routerLink]="['/register']"
+              routerLinkActive="router-link-active"
+              class="text-primary fw-bold"
+              >Regístrate aquí</a
+            >
+          </p>
+        </div>
+
+        <!--TODO: Investigar si esto es necesario
+          Causa:  Si un usuario ADMINISTRADOR olvida su contraseña, debe poder recuperarla.
+                  Sin embargo si es un usuario normal (HR), debe contactar con el ADMINISTRADOR de su compañía.
+        -->
+        <div>
+          <p class="text-center mb-0 py-2">
+            ¿Olvidaste tu contraseña?
+            <a
+              [routerLink]="['/forgot-password']"
+              routerLinkActive="router-link-active"
+              class="text-primary fw-bold"
+              >Recupérala aquí</a
+            >
+          </p>
         </div>
 
         <div class="card-footer text-center py-3">

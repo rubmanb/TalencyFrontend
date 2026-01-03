@@ -3,13 +3,17 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">🔑 Gestión de Usuarios</h2>
     @if(hasPermission('CREATE_USER')){
-      <button class="btn btn-primary" (click)="openCreateModal()">
-        <i class="bi bi-person-plus me-2"></i>Nuevo Usuario
-      </button>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <i class="bi bi-person-plus me-2"></i>Nuevo Usuario
+    </button>
     }
   </div>
 
-  <app-create-user #createUserModal [employeesCanBeUsers]="employeesCanBeUsers" (saveUser)="onSaveUser($event)"></app-create-user>
+  <app-create-user
+    #createUserModal
+    [employeesCanBeUsers]="employeesCanBeUsers"
+    (saveUser)="onSaveUser($event)"
+  ></app-create-user>
 
   <!-- User Statistics -->
   <div class="row mb-4">
@@ -66,10 +70,13 @@
   <!-- Filters and Search -->
   <div class="row mb-4">
     <div class="col-md-4">
-      <input type="text" class="form-control"
-             placeholder="Buscar usuarios..."
-             [(ngModel)]="searchTerm"
-             (input)="filterUsers()">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar usuarios..."
+        [(ngModel)]="searchTerm"
+        (input)="filterUsers()"
+      />
     </div>
     <div class="col-md-3">
       <select class="form-select" [(ngModel)]="roleFilter" (change)="filterUsers()">
@@ -111,74 +118,84 @@
           </thead>
           <tbody>
             @for (user of filteredUsers; track user.id) {
-              <tr>
-                <td>
-                  <strong>{{ user.username }}</strong>
-                </td>
-                <td>{{ user.email }}</td>
-                <td>
-                  @if (user.employeeName) {
-                    <span>{{ user.employeeName }}</span>
-                  } @else {
-                    <span class="text-muted">No asignado</span>
-                  }
-                </td>
-                <td>
-                  @for (role of user.roles; track role) {
-                    <span class="badge me-1"
-                          [class.bg-primary]="role === 'ROLE_ADMIN'"
-                          [class.bg-success]="role === 'ROLE_HR'"
-                          [class.bg-secondary]="role === 'ROLE_EMPLOYEE'">
-                      {{ getRoleDisplayName(role) }}
-                    </span>
-                  }
-                </td>
-                <td>
-                  {{ user.lastLogin ? (user.lastLogin | date:'short') : 'Nunca' }}
-                </td>
-                <td>
-                  <span class="badge"
-                        [class.bg-success]="user.active"
-                        [class.bg-danger]="!user.active">
-                    {{ user.active ? 'Activo' : 'Inactivo' }}
-                  </span>
-                </td>
-                <td class="text-end">
-                  <div class="btn-group btn-group-sm">
-                    <button class="btn btn-outline-primary"
-                            (click)="editUser(user)"
-                            [disabled]="!hasPermission('EDIT_USER')">
-                      <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-outline-info"
-                            (click)="viewUser(user)">
-                      <i class="bi bi-eye"></i>
-                    </button>
-                    <button class="btn btn-outline-warning"
-                            (click)="resetPassword(user.id)"
-                            [disabled]="!hasPermission('EDIT_USER')">
-                      <i class="bi bi-key"></i>
-                    </button>
-                    <button class="btn"
-                            [class.btn-outline-success]="!user.active"
-                            [class.btn-outline-secondary]="user.active"
-                            (click)="toggleUserStatus(user)"
-                            [disabled]="!hasPermission('EDIT_USER')">
-                      <i class="bi"
-                        [class.bi-check-circle]="!user.active"
-                        [class.bi-x-circle]="user.active"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-            @if (filteredUsers.length === 0) {
-              <tr>
-                <td colspan="7" class="text-center text-muted py-4">
-                  <i class="bi bi-people display-4 d-block mb-2"></i>
-                  No se encontraron usuarios
-                </td>
-              </tr>
+            <tr>
+              <td>
+                <strong>{{ user.username }}</strong>
+              </td>
+              <td>{{ user.email }}</td>
+              <td>
+                @if (user.employeeName) {
+                <span>{{ user.employeeName }}</span>
+                } @else {
+                <span class="text-muted">No asignado</span>
+                }
+              </td>
+              <td>
+                @for (role of user.roles; track role) {
+                <span
+                  class="badge me-1"
+                  [class.bg-primary]="role === 'ROLE_ADMIN'"
+                  [class.bg-success]="role === 'ROLE_HR'"
+                  [class.bg-secondary]="role === 'ROLE_EMPLOYEE'"
+                >
+                  {{ getRoleDisplayName(role) }}
+                </span>
+                }
+              </td>
+              <td>
+                {{ user.lastLogin ? (user.lastLogin | date : 'short') : 'Nunca' }}
+              </td>
+              <td>
+                <span
+                  class="badge"
+                  [class.bg-success]="user.active"
+                  [class.bg-danger]="!user.active"
+                >
+                  {{ user.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="text-end">
+                <div class="btn-group btn-group-sm">
+                  <button
+                    class="btn btn-outline-primary"
+                    (click)="editUser(user)"
+                    [disabled]="!hasPermission('EDIT_USER')"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-outline-info" (click)="viewUser(user)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-warning"
+                    (click)="resetPassword(user.id)"
+                    [disabled]="!hasPermission('EDIT_USER')"
+                  >
+                    <i class="bi bi-key"></i>
+                  </button>
+                  <button
+                    class="btn"
+                    [class.btn-outline-success]="!user.active"
+                    [class.btn-outline-secondary]="user.active"
+                    (click)="toggleUserStatus(user)"
+                    [disabled]="!hasPermission('EDIT_USER')"
+                  >
+                    <i
+                      class="bi"
+                      [class.bi-check-circle]="!user.active"
+                      [class.bi-x-circle]="user.active"
+                    ></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            } @if (filteredUsers.length === 0) {
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4">
+                <i class="bi bi-people display-4 d-block mb-2"></i>
+                No se encontraron usuarios
+              </td>
+            </tr>
             }
           </tbody>
         </table>

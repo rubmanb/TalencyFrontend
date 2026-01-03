@@ -1,266 +1,324 @@
 <div class="container-fluid">
   <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">⚙️ Configuración del Sistema</h2>
+    <h2 class="mb-0">⚙️ Configuración</h2>
+
     <div class="btn-group">
-      <button class="btn btn-outline-primary" (click)="saveSettings()">
-        <i class="bi bi-save me-2"></i>Guardar Cambios
+      <button
+        class="btn btn-outline-primary"
+        (click)="saveSettings()"
+        [disabled]="!hasUnsavedChanges"
+      >
+        <i class="bi bi-save me-2"></i>Guardar
       </button>
-      <button class="btn btn-outline-secondary" (click)="resetSettings()">
+
+      <button
+        class="btn btn-outline-secondary"
+        (click)="resetSettings()"
+        [disabled]="!hasUnsavedChanges"
+      >
         <i class="bi bi-arrow-clockwise me-2"></i>Restablecer
       </button>
     </div>
   </div>
 
   <div class="row">
-    <!-- Navigation -->
+    <!-- NAVIGATION -->
     <div class="col-md-3">
       <div class="card">
-        <div class="card-body">
-          <div class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action" 
-               [class.active]="activeTab === 'general'"
-               (click)="setActiveTab('general')">
-              <i class="bi bi-gear me-2"></i>General
-            </a>
-            <a class="list-group-item list-group-item-action" 
-               [class.active]="activeTab === 'security'"
-               (click)="setActiveTab('security')">
-              <i class="bi bi-shield-lock me-2"></i>Seguridad
-            </a>
-            <a class="list-group-item list-group-item-action" 
-               [class.active]="activeTab === 'notifications'"
-               (click)="setActiveTab('notifications')">
-              <i class="bi bi-bell me-2"></i>Notificaciones
-            </a>
-            <a class="list-group-item list-group-item-action" 
-               [class.active]="activeTab === 'backup'"
-               (click)="setActiveTab('backup')">
-              <i class="bi bi-cloud-arrow-down me-2"></i>Backup
-            </a>
-            <a class="list-group-item list-group-item-action" 
-               [class.active]="activeTab === 'api'"
-               (click)="setActiveTab('api')">
-              <i class="bi bi-code-slash me-2"></i>API
-            </a>
-          </div>
+        <div class="list-group list-group-flush">
+          <a
+            class="list-group-item list-group-item-action"
+            [class.active]="activeTab === 'general'"
+            (click)="setActiveTab('general')"
+          >
+            <i class="bi bi-gear me-2"></i>General
+          </a>
+
+          <a
+            class="list-group-item list-group-item-action"
+            [class.active]="activeTab === 'security'"
+            (click)="setActiveTab('security')"
+          >
+            <i class="bi bi-shield-lock me-2"></i>Seguridad
+          </a>
+
+          <a
+            class="list-group-item list-group-item-action"
+            [class.active]="activeTab === 'notifications'"
+            (click)="setActiveTab('notifications')"
+          >
+            <i class="bi bi-bell me-2"></i>Notificaciones
+          </a>
+
+          <a
+            class="list-group-item list-group-item-action"
+            [class.active]="activeTab === 'backup'"
+            (click)="setActiveTab('backup')"
+          >
+            <i class="bi bi-cloud-check me-2"></i>Backups
+          </a>
+
+          <a
+            class="list-group-item list-group-item-action"
+            [class.active]="activeTab === 'api'"
+            (click)="setActiveTab('api')"
+          >
+            <i class="bi bi-code-slash me-2"></i>API & Integraciones
+          </a>
         </div>
       </div>
     </div>
 
-    <!-- Content -->
+    <!-- CONTENT -->
     <div class="col-md-9">
-      <!-- General Settings -->
-      <div class="card" *ngIf="activeTab === 'general'">
+      @if (activeTab === 'general') {
+      <!-- GENERAL -->
+      <div class="card">
         <div class="card-header">
-          <h5 class="card-title mb-0">⚙️ Configuración General</h5>
+          <h5 class="mb-0">Configuración General</h5>
         </div>
+
         <div class="card-body">
+          <!--FILA 1-->
           <div class="row mb-3">
             <div class="col-md-6">
-              <label class="form-label">Nombre de la Empresa</label>
-              <input type="text" class="form-control" 
-                     [(ngModel)]="settings.companyName">
+              <label class="form-label">Empresa</label>
+              <input
+                class="form-control"
+                [(ngModel)]="general.companyName"
+                (ngModelChange)="onChange()"
+              />
             </div>
+
             <div class="col-md-6">
-              <label class="form-label">Zona Horaria</label>
-              <select class="form-select" [(ngModel)]="settings.timezone">
-                <option value="Europe/Madrid">Europe/Madrid</option>
-                <option value="UTC">UTC</option>
-                <option value="America/New_York">America/New_York</option>
-              </select>
+              <label class="form-label">CIF/NIF</label>
+              <input
+                class="form-control"
+                [(ngModel)]="general.taxId"
+                (ngModelChange)="onChange()"
+              />
             </div>
           </div>
+
+          <!--FILA 2-->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input
+                class="form-control"
+                [(ngModel)]="general.email"
+                (ngModelChange)="onChange()"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Dirección</label>
+              <input
+                class="form-control"
+                [(ngModel)]="general.address"
+                (ngModelChange)="onChange()"
+              />
+            </div>
+          </div>
+
+          <!--FILA 3-->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Ciudad</label>
+              <input class="form-control" [(ngModel)]="general.city" (ngModelChange)="onChange()" />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">País</label>
+              <input
+                class="form-control"
+                [(ngModel)]="general.country"
+                (ngModelChange)="onChange()"
+              />
+            </div>
+          </div>
+
+          <!--FILA 4-->
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label">Idioma</label>
-              <select class="form-select" [(ngModel)]="settings.language">
+              <select class="form-select" [(ngModel)]="general.language" (change)="onChange()">
                 <option value="es">Español</option>
                 <option value="en">English</option>
-                <option value="fr">Français</option>
               </select>
             </div>
+
             <div class="col-md-6">
-              <label class="form-label">Formato de Fecha</label>
-              <select class="form-select" [(ngModel)]="settings.dateFormat">
+              <label class="form-label">Teléfono</label>
+              <input
+                class="form-control"
+                [(ngModel)]="general.phone"
+                (ngModelChange)="onChange()"
+              />
+            </div>
+          </div>
+
+          <!--FILA 5-->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Zona horaria</label>
+              <select class="form-select" [(ngModel)]="general.timezone" (change)="onChange()">
+                <option value="Europe/Madrid">Europe/Madrid</option>
+                <option value="UTC">UTC</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Formato de fecha</label>
+              <select class="form-select" [(ngModel)]="general.dateFormat" (change)="onChange()">
                 <option value="dd/MM/yyyy">DD/MM/YYYY</option>
-                <option value="MM/dd/yyyy">MM/DD/YYYY</option>
                 <option value="yyyy-MM-dd">YYYY-MM-DD</option>
               </select>
             </div>
           </div>
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="settings.autoLogout">
-            <label class="form-check-label">Cierre de sesión automático</label>
+
+          <div>
+            <div class="col-md-6">
+              <label class="form-label">Suscripción Activa</label>
+              <input
+                class="form-control"
+                [(ngModel)]="general.suscriptionPlan"
+                (ngModelChange)="onChange()"
+              />
+            </div>
           </div>
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="settings.maintenanceMode">
-            <label class="form-check-label">Modo mantenimiento</label>
+
+          <!--FIN FILAS-->
+        </div>
+      </div>
+      } @if (activeTab === 'security') {
+      <!-- SECURITY -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Seguridad</h5>
+        </div>
+
+        <div class="card-body">
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [(ngModel)]="security.twoFactorAuth"
+              (change)="onChange()"
+            />
+            <label class="form-check-label"> Autenticación de dos factores (2FA) </label>
           </div>
         </div>
       </div>
-
-      <!-- Security Settings -->
-      <div class="card" *ngIf="activeTab === 'security'">
+      } @if (activeTab === 'notifications') {
+      <!-- NOTIFICATIONS -->
+      <div class="card">
         <div class="card-header">
-          <h5 class="card-title mb-0">🔐 Configuración de Seguridad</h5>
+          <h5 class="mb-0">Notificaciones</h5>
         </div>
+
         <div class="card-body">
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label class="form-label">Longitud mínima de contraseña</label>
-              <input type="number" class="form-control" 
-                     [(ngModel)]="security.minPasswordLength" min="6" max="20">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Días de expiración de contraseña</label>
-              <input type="number" class="form-control" 
-                     [(ngModel)]="security.passwordExpiryDays" min="30" max="365">
-            </div>
+          <h6>Eventos</h6>
+
+          @for (event of [ { key: 'employeeLifecycle', label: 'Altas y bajas de empleados' }, { key:
+          'vacations', label: 'Vacaciones' }, { key: 'security', label: 'Alertas de seguridad' } ];
+          track event.key) { @for (event of notificationEventList; track event.key) {
+          <div class="form-check form-switch mb-2">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [(ngModel)]="notifications.events[event.key]"
+              (change)="onChange()"
+            />
+            <label class="form-check-label">
+              {{ event.label }}
+            </label>
           </div>
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="security.requireSpecialChars">
-            <label class="form-check-label">Requerir caracteres especiales</label>
+          } }
+
+          <hr />
+
+          <h6>Canales</h6>
+
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [(ngModel)]="notifications.channels.email"
+              (change)="onChange()"
+            />
+            <label class="form-check-label">Email</label>
           </div>
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="security.requireNumbers">
-            <label class="form-check-label">Requerir números</label>
-          </div>
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="security.twoFactorAuth">
-            <label class="form-check-label">Autenticación de dos factores</label>
-          </div>
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="security.loginAttemptsLimit">
-            <label class="form-check-label">Límite de intentos de login</label>
+
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [(ngModel)]="notifications.channels.inApp"
+              (change)="onChange()"
+            />
+            <label class="form-check-label">En la aplicación</label>
           </div>
         </div>
       </div>
-
-      <!-- Notifications Settings -->
-      <div class="card" *ngIf="activeTab === 'notifications'">
+      } @if (activeTab === 'backup') {
+      <!-- BACKUP -->
+      <div class="card">
         <div class="card-header">
-          <h5 class="card-title mb-0">🔔 Configuración de Notificaciones</h5>
+          <h5 class="mb-0">Backups</h5>
         </div>
+
         <div class="card-body">
-          <h6>Notificaciones por Email</h6>
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="notifications.email.newEmployee">
-            <label class="form-check-label">Nuevos empleados</label>
-          </div>
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="notifications.email.employeeTermination">
-            <label class="form-check-label">Bajas de empleados</label>
-          </div>
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="notifications.email.vacationRequests">
-            <label class="form-check-label">Solicitudes de vacaciones</label>
-          </div>
-          
-          <h6 class="mt-4">Notificaciones en Sistema</h6>
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="notifications.system.updates">
-            <label class="form-check-label">Actualizaciones del sistema</label>
-          </div>
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="notifications.system.securityAlerts">
-            <label class="form-check-label">Alertas de seguridad</label>
-          </div>
+          <p><strong>Política:</strong> {{ backup.policy }}</p>
+          <p><strong>Último backup:</strong> {{ backup.lastBackup }}</p>
+
+          <div class="alert alert-info">Los backups se gestionan automáticamente por Talency.</div>
         </div>
       </div>
-
-      <!-- Backup Settings -->
-      <div class="card" *ngIf="activeTab === 'backup'">
+      } @if (activeTab === 'api') {
+      <!-- API -->
+      <div class="card">
         <div class="card-header">
-          <h5 class="card-title mb-0">💾 Configuración de Backup</h5>
+          <h5 class="mb-0">API & Integraciones</h5>
         </div>
+
         <div class="card-body">
-          <div class="row mb-4">
-            <div class="col-md-6">
-              <label class="form-label">Frecuencia de backup automático</label>
-              <select class="form-select" [(ngModel)]="backup.frequency">
-                <option value="daily">Diario</option>
-                <option value="weekly">Semanal</option>
-                <option value="monthly">Mensual</option>
-                <option value="never">Nunca</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Máximo de backups guardados</label>
-              <input type="number" class="form-control" 
-                     [(ngModel)]="backup.maxBackups" min="1" max="50">
-            </div>
+          <div class="form-check form-switch mb-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [(ngModel)]="api.enabled"
+              (change)="onChange()"
+            />
+            <label class="form-check-label"> Habilitar API </label>
           </div>
-          
-          <div class="alert alert-info">
-            <i class="bi bi-info-circle me-2"></i>
-            Último backup: {{ backup.lastBackup || 'Nunca' }}
-          </div>
-          
-          <div class="btn-group">
-            <button class="btn btn-primary" (click)="createBackup()">
-              <i class="bi bi-cloud-arrow-up me-2"></i>Crear Backup Ahora
+
+          @if (api.enabled) {
+          <label class="form-label">API Key</label>
+
+          <div class="input-group mb-3">
+            <input
+              class="form-control"
+              [type]="showApiKey ? 'text' : 'password'"
+              [value]="api.key"
+              readonly
+            />
+
+            <button class="btn btn-outline-secondary" (click)="showApiKey = !showApiKey">
+              <i class="bi bi-eye"></i>
             </button>
-            <button class="btn btn-outline-secondary" (click)="restoreBackup()">
-              <i class="bi bi-cloud-arrow-down me-2"></i>Restaurar Backup
+
+            <button class="btn btn-outline-warning" (click)="generateApiKey()">
+              <i class="bi bi-arrow-repeat"></i>
             </button>
           </div>
+
+          <p><strong>Último uso:</strong> {{ api.lastUsed }}</p>
+          }
         </div>
       </div>
-
-      <!-- API Settings -->
-      <div class="card" *ngIf="activeTab === 'api'">
-        <div class="card-header">
-          <h5 class="card-title mb-0">🔌 Configuración API</h5>
-        </div>
-        <div class="card-body">
-          <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" 
-                   [(ngModel)]="api.enabled">
-            <label class="form-check-label">API REST Habilitada</label>
-          </div>
-          
-          <div class="mb-3" *ngIf="api.enabled">
-            <label class="form-label">API Key</label>
-            <div class="input-group">
-              <input type="text" class="form-control" 
-                     [value]="api.key" 
-                     [type]="showApiKey ? 'text' : 'password'" 
-                     readonly>
-              <button class="btn btn-outline-secondary" 
-                      (click)="showApiKey = !showApiKey">
-                <i class="bi" [class.bi-eye]="!showApiKey" [class.bi-eye-slash]="showApiKey"></i>
-              </button>
-              <button class="btn btn-outline-warning" (click)="generateApiKey()">
-                <i class="bi bi-arrow-repeat"></i>
-              </button>
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Límite de peticiones por minuto</label>
-            <input type="number" class="form-control" 
-                   [(ngModel)]="api.rateLimit" min="10" max="1000">
-          </div>
-
-          <div class="alert alert-warning">
-            <i class="bi bi-exclamation-triangle me-2"></i>
-            La configuración de API afecta a la seguridad del sistema. 
-            Modifica estos valores con precaución.
-          </div>
-        </div>
-      </div>
+      }
     </div>
   </div>
 </div>
