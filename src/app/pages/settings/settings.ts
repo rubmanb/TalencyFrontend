@@ -17,9 +17,7 @@ export class Settings implements OnInit {
   hasUnsavedChanges = false;
   showApiKey = false;
 
-  // ───────────────
   // GENERAL
-  // ───────────────
   general = {
     companyName: 'Talency HR',
     timezone: 'Europe/Madrid',
@@ -34,16 +32,12 @@ export class Settings implements OnInit {
     suscriptionPlan: 'Pro', // Free, Pro, Enterprise
   };
 
-  // ───────────────
   // SECURITY (SIMPLIFICADO)
-  // ───────────────
   security = {
     twoFactorAuth: false,
   };
 
-  // ───────────────
   // NOTIFICATIONS (HR CENTRIC)
-  // ───────────────
   notifications: {
     events: Record<NotificationEventKey, boolean>;
     channels: {
@@ -68,17 +62,13 @@ export class Settings implements OnInit {
     { key: 'security', label: 'Alertas de seguridad' },
   ];
 
-  // ───────────────
   // BACKUP (READ ONLY INFO)
-  // ───────────────
   backup = {
     policy: 'Backups diarios automáticos (retención 30 días)',
     lastBackup: '2024-10-03T23:00:00',
   };
 
-  // ───────────────
   // API (INTEGRATIONS)
-  // ───────────────
   api = {
     enabled: false,
     key: 'sk_live_xxxxxxxxxxxxxxxxx',
@@ -89,6 +79,16 @@ export class Settings implements OnInit {
       readAnalytics: true,
       writeEmployees: false,
     },
+  };
+
+  // Permisos
+  permissions = {
+    roles: ['OWNER', 'ADMIN', 'USER', 'EMPLOYEE'],
+    permissions: [
+      { key: 'readEmployees', label: 'Leer datos de empleados' },
+      { key: 'readAnalytics', label: 'Acceder a analíticas' },
+      { key: 'writeEmployees', label: 'Modificar datos de empleados' },
+    ],
   };
 
   private originalState: any;
@@ -114,6 +114,7 @@ export class Settings implements OnInit {
         security: this.security,
         notifications: this.notifications,
         api: this.api,
+        permissions: this.permissions,
       });
 
       this.originalState = JSON.parse(JSON.stringify(this));

@@ -66,6 +66,14 @@
           >
             <i class="bi bi-code-slash me-2"></i>API & Integraciones
           </a>
+
+          <a
+            class="list-group-item list-group-item-action"
+            [class.active]="activeTab === 'permissions'"
+            (click)="setActiveTab('permissions')"
+          >
+            <i class="bi bi-code-slash me-2"></i>Permisos
+          </a>
         </div>
       </div>
     </div>
@@ -316,6 +324,16 @@
 
           <p><strong>Último uso:</strong> {{ api.lastUsed }}</p>
           }
+        </div>
+      </div>
+      } @if (activeTab === 'permissions') {
+      <!-- PERMISOS -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Permisos</h5>
+        </div>
+        <div class="card-body">
+          <p>Gestión de permisos próximamente...</p>
         </div>
       </div>
       }
