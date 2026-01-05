@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UserService } from '../../core/services/user.service';
 
 type NotificationEventKey = 'employeeLifecycle' | 'vacations' | 'security';
 
@@ -92,9 +93,14 @@ export class Settings implements OnInit {
   };
 
   private originalState: any;
+  searchUser: string = '';
+  userSelected: string = 'Usuario';
+
+  constructor(private userService: UserService) {}
 
   ngOnInit() {
-    this.originalState = JSON.parse(JSON.stringify(this));
+    // this.originalState = JSON.parse(JSON.stringify(this));
+    this.filterUsers();
   }
 
   setActiveTab(tab: string) {
@@ -141,5 +147,14 @@ export class Settings implements OnInit {
       Math.random().toString(36).substring(2);
 
     this.hasUnsavedChanges = true;
+  }
+
+  filterUsers() {
+    this.userService.getAllUsers().subscribe((users) => {
+      const filtered = users.filter((user) =>
+        user.employeeName!.toLowerCase().includes(this.searchUser.toLowerCase())
+      );
+      this.userSelected = users.length > 0 ? filtered[0].employeeName! : 'Usuario no encontrado';
+    });
   }
 }

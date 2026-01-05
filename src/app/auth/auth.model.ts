@@ -2,6 +2,7 @@ export interface AuthRequest {
   company: string;
   username: string;
   password: string;
+  subscription?: string;
 }
 
 export interface AuthResponse {

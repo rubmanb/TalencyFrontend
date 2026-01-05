@@ -333,7 +333,37 @@
           <h5 class="mb-0">Permisos</h5>
         </div>
         <div class="card-body">
-          <p>Gestión de permisos próximamente...</p>
+          <div>
+            <label class="form-label">Roles de usuario y sus permisos asociados:</label>
+          </div>
+          <!--Buscar empleado-->
+          <div class="mb-3">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Buscar usuario..."
+              [(ngModel)]="searchUser"
+              (input)="filterUsers()"
+            />
+          </div>
+          <!--Usuario seleccionado-->
+          <div class="mb-3">
+            <label class="form-label">Usuario: {{ userSelected }}</label>
+          </div>
+          <!--Lista de roles y permisos-->
+          <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+            <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" />
+            <label class="btn btn-outline-primary" for="btncheck1">OWNER</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off" />
+            <label class="btn btn-outline-primary" for="btncheck2">ADMIN</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off" />
+            <label class="btn btn-outline-primary" for="btncheck3">USER</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck4" autocomplete="off" />
+            <label class="btn btn-outline-primary" for="btncheck4">EMPLOYEE</label>
+          </div>
         </div>
       </div>
       }

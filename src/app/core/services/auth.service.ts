@@ -26,6 +26,8 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<AuthUser | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
+  private subscription: string = '';
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -285,5 +287,17 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_EXPIRY_KEY);
 
     this.currentUserSubject.next(null);
+  }
+
+  register(authRequest: AuthRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.API_URL}/register`, authRequest).pipe(
+      tap((response) => {
+        this.saveSession(response, authRequest.username, authRequest.company);
+      }),
+      catchError((error) => {
+        this.clearSession();
+        return throwError(() => error);
+      })
+    );
   }
 }
