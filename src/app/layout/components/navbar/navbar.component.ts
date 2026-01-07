@@ -6,23 +6,20 @@ import { AuthService } from '../../../core/services/auth.service';
   selector: 'navbar-component',
   imports: [],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrl: './navbar.component.css',
 })
 export class NavbarComponent implements OnInit {
-  username: string = 'Usuario';
+  email: string = 'Usuario@Empresa.com';
   company_name: string = 'Company Inc.';
 
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit() {
     this.loadUsername();
   }
 
   private loadUsername() {
-    this.username = this.authService.getUsername();
+    this.email = this.authService.getUserEmail();
   }
 
   private loadCompanyName() {

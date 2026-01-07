@@ -6,9 +6,10 @@ import { catchError, tap } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import {
   AuthResponse,
-  AuthRequest,
+  AuthRequestLogin,
   RefreshTokenResponse,
   RefreshTokenRequest,
+  AuthRequestRegister,
 } from '../../auth/auth.model';
 import { AuthUser } from '../../auth/auth-user.interface';
 import { User } from '../../interfaces/user.interface';
@@ -42,11 +43,11 @@ export class AuthService {
   /**
    * Login del usuario
    */
-  login(company: string, username: string, password: string): Observable<AuthResponse> {
-    const authRequest: AuthRequest = { company, username, password };
+  login(companyName: string, email: string, password: string): Observable<AuthResponse> {
+    const authRequest: AuthRequestLogin = { companyName, email, password };
     return this.http.post<AuthResponse>(`${this.API_URL}/login`, authRequest).pipe(
       tap((response) => {
-        this.saveSession(response, username, company);
+        this.saveSession(response, email, companyName);
       }),
       catchError((error) => {
         this.clearSession();
@@ -189,7 +190,7 @@ export class AuthService {
 
   // ==================== MÉTODOS PRIVADOS ====================
 
-  private saveSession(response: AuthResponse, username: string, company: string): void {
+  private saveSession(response: AuthResponse, email: string, companyName: string): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
     const expiresIn = response.expiresIn || 86400000;
@@ -201,8 +202,8 @@ export class AuthService {
 
     // Crear AuthUser con datos mínimos para autenticación
     const authUser: AuthUser = {
-      username: response.username || username,
-      company: response.company || company,
+      email: response.email || email,
+      companyName: response.companyName || companyName,
       roles: response.roles || [],
       token: response.accessToken,
       refreshToken: response.refreshToken,
@@ -258,9 +259,9 @@ export class AuthService {
   /**
    * Obtener el nombre de usuario
    */
-  getUsername(): string {
+  getUserEmail(): string {
     const user = this.currentUserSubject.value;
-    return user?.username || '';
+    return user?.email || '';
   }
 
   /**
@@ -268,7 +269,7 @@ export class AuthService {
    */
   getCompanyName(): string {
     const user = this.currentUserSubject.value;
-    return user?.company || '';
+    return user?.companyName || '';
   }
 
   private getTokenExpiry(): number | null {
@@ -289,10 +290,10 @@ export class AuthService {
     this.currentUserSubject.next(null);
   }
 
-  register(authRequest: AuthRequest): Observable<AuthResponse> {
+  register(authRequest: AuthRequestRegister): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/register`, authRequest).pipe(
       tap((response) => {
-        this.saveSession(response, authRequest.username, authRequest.company);
+        // this.saveSession(response, authRequest.email);
       }),
       catchError((error) => {
         this.clearSession();

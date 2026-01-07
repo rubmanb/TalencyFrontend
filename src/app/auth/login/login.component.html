@@ -18,29 +18,29 @@
               <input
                 type="text"
                 class="form-control form-control-lg"
-                id="company"
-                name="company"
-                [(ngModel)]="loginData.company"
+                id="companyName"
+                name="companyName"
+                [(ngModel)]="loginData.companyName"
                 required
                 placeholder="Ingresa el nombre de la compañía"
-                [class.is-invalid]="errorMessage && !loginData.company"
+                [class.is-invalid]="errorMessage && !loginData.companyName"
               />
             </div>
 
             <!-- Username -->
             <div class="mb-3">
               <label for="username" class="form-label">
-                <i class="bi bi-person me-2"></i>Usuario
+                <i class="bi bi-person me-2"></i>Email Usuario
               </label>
               <input
                 type="text"
                 class="form-control form-control-lg"
                 id="username"
                 name="username"
-                [(ngModel)]="loginData.username"
+                [(ngModel)]="loginData.email"
                 required
-                placeholder="Ingresa tu usuario"
-                [class.is-invalid]="errorMessage && !loginData.username"
+                placeholder="Ingresa tu email"
+                [class.is-invalid]="errorMessage && !loginData.email"
               />
             </div>
 
@@ -100,12 +100,13 @@
               </div>
               <div class="col-12 mb-2">
                 <small class="text-dark fw-bold">Administrador:</small><br />
-                <code class="text-primary">admin.maria</code> /
+                <code class="text-primary">admin@empresa.com</code> /
                 <code class="text-primary">admin123</code>
               </div>
               <div class="col-12">
                 <small class="text-dark fw-bold">Recursos Humanos:</small><br />
-                <code class="text-primary">rh.ana</code> / <code class="text-primary">ana123</code>
+                <code class="text-primary">laura@empresa.com</code> /
+                <code class="text-primary">admin123</code>
               </div>
             </div>
           </div>
@@ -124,7 +125,7 @@
         </div>
 
         <!--TODO: Investigar si esto es necesario
-          Causa:  Si un usuario ADMINISTRADOR olvida su contraseña, debe poder recuperarla.
+          Causa:  Si un usuario OWNER/ADMINISTRADOR olvida su contraseña, debe poder recuperarla.
                   Sin embargo si es un usuario normal (HR), debe contactar con el ADMINISTRADOR de su compañía.
         -->
         <div>

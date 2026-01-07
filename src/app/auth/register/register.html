@@ -13,7 +13,7 @@
         <div class="card-body p-4">
           <form (ngSubmit)="onRegister()" #registerForm="ngForm">
             <!-- Company -->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label class="form-label"> <i class="bi bi-building me-2"></i>Compañía </label>
               <input
                 type="text"
@@ -23,7 +23,7 @@
                 required
                 placeholder="Nombre de tu empresa"
               />
-            </div>
+            </div> -->
 
             <!-- Email -->
             <div class="mb-3">
@@ -39,7 +39,7 @@
             </div>
 
             <!-- UserName -->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label class="form-label"> <i class="bi bi-envelope me-2"></i>Username </label>
               <input
                 type="email"
@@ -49,7 +49,7 @@
                 required
                 placeholder="username"
               />
-            </div>
+            </div> -->
 
             <!-- Password -->
             <div class="mb-3">
@@ -73,14 +73,14 @@
                 type="password"
                 class="form-control form-control-lg"
                 name="confirmPassword"
-                [(ngModel)]="registerData.confirmPassword"
+                [(ngModel)]="confirmPassword"
                 required
                 placeholder="Repite la contraseña"
               />
             </div>
 
             <!-- Suscription Plan -->
-            <div class="mb-4">
+            <!-- <div class="mb-4">
               <label class="form-label">
                 <i class="bi bi-shield-check me-2"></i>Plan de suscripción
               </label>
@@ -95,7 +95,7 @@
                 <option value="Pro">Pro</option>
                 <option value="Enterprise">Enterprise</option>
               </select>
-            </div>
+            </div> -->
 
             <!-- Submit -->
             <button type="submit" class="btn btn-primary btn-lg w-100 py-2" [disabled]="isLoading">

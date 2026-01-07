@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { AuthRequest } from '../auth.model';
+import { AuthRequestLogin } from '../auth.model';
 
 @Component({
   selector: 'app-login',
@@ -13,9 +13,9 @@ import { AuthRequest } from '../auth.model';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  loginData: AuthRequest = {
-    company: '',
-    username: '',
+  loginData: AuthRequestLogin = {
+    companyName: '',
+    email: '',
     password: '',
   };
 
@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
     this.isLoading = true;
 
     this.authService
-      .login(this.loginData.company, this.loginData.username, this.loginData.password)
+      .login(this.loginData.companyName, this.loginData.email, this.loginData.password)
       .subscribe({
         next: (response) => {
           this.isLoading = false;
@@ -56,13 +56,13 @@ export class LoginComponent implements OnInit {
   }
 
   private validateForm(): boolean {
-    if (!this.loginData.company?.trim()) {
+    if (!this.loginData.companyName?.trim()) {
       this.errorMessage = 'El nombre de la empresa es requerido';
       return false;
     }
 
-    if (!this.loginData.username?.trim()) {
-      this.errorMessage = 'El nombre de usuario es requerido';
+    if (!this.loginData.email?.trim()) {
+      this.errorMessage = 'El email de usuario es requerido';
       return false;
     }
 
@@ -89,7 +89,7 @@ export class LoginComponent implements OnInit {
   }
 
   private handleError(error: any): void {
-    console.error('Login error:', error);
+    // console.error('Login error:', error);
 
     if (error.status === 401) {
       this.errorMessage = 'Credenciales inválidas. Verifique su empresa, usuario y contraseña.';

@@ -1,8 +1,17 @@
-export interface AuthRequest {
-  company: string;
-  username: string;
+export interface AuthRequestRegister {
+  // company: string;
+  // username: string;
+  email: string;
   password: string;
-  subscription?: string;
+  // subscription?: string;
+}
+
+export interface AuthRequestLogin {
+  companyName: string;
+  // username: string;
+  email: string;
+  password: string;
+  // subscription?: string;
 }
 
 export interface AuthResponse {
@@ -11,8 +20,8 @@ export interface AuthResponse {
   tokenType: string;
   roles: string[];
   expiresIn: number;
-  username?: string;
-  company?: string;
+  email: string;
+  companyName?: string;
 }
 
 export interface RefreshTokenRequest {

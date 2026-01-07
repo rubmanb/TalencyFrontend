@@ -1,6 +1,6 @@
 export interface AuthUser {
-  username: string;
-  company: string;
+  email: string;
+  companyName: string;
   roles: string[];
   token?: string;
   refreshToken?: string;
