@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { AuthRequestLogin } from '../auth.model';
+import { DateService } from '../../pages/services/date.service';
 
 @Component({
   selector: 'app-login',
@@ -23,10 +24,13 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   rememberMe = false;
 
+  private readonly dateService = inject(DateService);
+
+  year = this.dateService.currentYear;
+
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-    // Si ya está autenticado, redirigir
     if (this.authService.isAuthenticated()) {
       this.redirectByRole();
     }
@@ -77,14 +81,9 @@ export class LoginComponent implements OnInit {
   private redirectByRole(): void {
     const user = this.authService.getCurrentUser();
     const roles = user?.roles || [];
-
+    // Redirecciones según roles
     if (roles.includes('ADMIN') || roles.includes('HR')) {
       this.router.navigate(['/dashboard']);
-      // } else if (roles.includes('EMPLOYEE')) {
-      //   this.router.navigate(['/profile']);
-      // } else {
-      //   // Rol por defecto
-      //   this.router.navigate(['/dashboard']);
     }
   }
 

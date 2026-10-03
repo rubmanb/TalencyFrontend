@@ -20,7 +20,7 @@ export class Settings implements OnInit {
 
   // GENERAL
   general = {
-    companyName: 'Talency HR',
+    companyName: 'EmGestIQ',
     timezone: 'Europe/Madrid',
     language: 'es',
     dateFormat: 'dd/MM/yyyy',
@@ -66,7 +66,7 @@ export class Settings implements OnInit {
   // BACKUP (READ ONLY INFO)
   backup = {
     policy: 'Backups diarios automáticos (retención 30 días)',
-    lastBackup: '2024-10-03T23:00:00',
+    lastBackup: '2026-10-03T23:00:00',
   };
 
   // API (INTEGRATIONS)

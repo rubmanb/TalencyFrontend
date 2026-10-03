@@ -42,10 +42,10 @@ export class SuperDashboard implements OnInit {
       phone: '+34 912 345 678',
       plan: 'PREMIUM',
       status: 'ACTIVE',
-      createdAt: '2024-01-15',
+      createdAt: '2026-01-15',
       employeesCount: 45,
       departmentsCount: 8,
-      lastLogin: '2024-12-19'
+      lastLogin: '2026-12-19'
     },
     {
       id: 2,
@@ -54,10 +54,10 @@ export class SuperDashboard implements OnInit {
       phone: '+34 913 456 789',
       plan: 'BASIC',
       status: 'ACTIVE',
-      createdAt: '2024-02-20',
+      createdAt: '2026-02-20',
       employeesCount: 12,
       departmentsCount: 4,
-      lastLogin: '2024-12-18'
+      lastLogin: '2026-12-18'
     },
     {
       id: 3,
@@ -66,10 +66,10 @@ export class SuperDashboard implements OnInit {
       phone: '+34 914 567 890',
       plan: 'FREE',
       status: 'PENDING',
-      createdAt: '2024-12-10',
+      createdAt: '2026-12-10',
       employeesCount: 3,
       departmentsCount: 2,
-      lastLogin: '2024-12-15'
+      lastLogin: '2026-12-15'
     }
   ];
 

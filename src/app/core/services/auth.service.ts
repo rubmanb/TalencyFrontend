@@ -19,10 +19,10 @@ import { User } from '../../interfaces/user.interface';
 })
 export class AuthService {
   private readonly API_URL = 'http://localhost:8080/api/auth';
-  private readonly TOKEN_KEY = 'talency_access_token';
-  private readonly REFRESH_TOKEN_KEY = 'talency_refresh_token';
-  private readonly USER_KEY = 'talency_user';
-  private readonly TOKEN_EXPIRY_KEY = 'talency_token_expiry';
+  private readonly TOKEN_KEY = 'EmGestIQ_access_token';
+  private readonly REFRESH_TOKEN_KEY = 'EmGestIQ_refresh_token';
+  private readonly USER_KEY = 'EmGestIQ_user';
+  private readonly TOKEN_EXPIRY_KEY = 'EmGestIQ_token_expiry';
 
   private currentUserSubject = new BehaviorSubject<AuthUser | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -174,19 +174,19 @@ export class AuthService {
    * Cargar perfil completo del usuario (User)
    * Este método lo llamarías después del login para obtener datos adicionales
    */
-  loadUserProfile(): Observable<User> {
-    return this.http.get<User>('/api/users/profile').pipe(
-      tap((profile) => {
-        // Combinar AuthUser con User profile
-        const currentAuth = this.currentUserSubject.value;
-        if (currentAuth) {
-          // Aquí podrías actualizar el AuthUser con datos adicionales si es necesario
-          // Pero mantén la separación clara entre AuthUser y User
-          console.log('User profile loaded:', profile);
-        }
-      })
-    );
-  }
+  // loadUserProfile(): Observable<User> {
+  //   return this.http.get<User>('/api/users/profile').pipe(
+  //     tap((profile) => {
+  //       // Combinar AuthUser con User profile
+  //       const currentAuth = this.currentUserSubject.value;
+  //       if (currentAuth) {
+  //         // Aquí podrías actualizar el AuthUser con datos adicionales si es necesario
+  //         // Pero mantén la separación clara entre AuthUser y User
+  //         console.log('User profile loaded:', profile);
+  //       }
+  //     })
+  //   );
+  // }
 
   // ==================== MÉTODOS PRIVADOS ====================
 
@@ -293,6 +293,7 @@ export class AuthService {
   register(authRequest: AuthRequestRegister): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/register`, authRequest).pipe(
       tap((response) => {
+        console.log("Método register -> AuthService: ", response);
         // this.saveSession(response, authRequest.email);
       }),
       catchError((error) => {

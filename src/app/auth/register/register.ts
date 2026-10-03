@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { AuthRequestRegister } from '../auth.model';
+import { DateService } from '../../pages/services/date.service';
 
 @Component({
   selector: 'app-register',
@@ -25,7 +26,14 @@ export class Register {
     // subscription: 'FREE' as 'FREE' | 'STANDARD' | 'PREMIUM',
   };
 
+  private readonly dateService = inject(DateService);
+
+  year = this.dateService.currentYear;
+
   constructor(private authService: AuthService, private router: Router) {}
+
+
+
 
   onRegister(): void {
     this.errorMessage = null;

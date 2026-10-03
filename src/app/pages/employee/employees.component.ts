@@ -25,6 +25,7 @@ export class Employees implements OnInit {
   editingId: number | null = null;
   searchText: string = '';
   filteredEmployees: Employee[] = [];
+  selectedEmployee: Employee | null = null;
   activeTab: string = 'list';
 
   departments: { id: number; name: string }[] = [];
@@ -223,6 +224,11 @@ export class Employees implements OnInit {
       });
   }
 
+  showEmployee(emp: Employee) {
+    this.selectedEmployee = emp;
+    this.activeTab = 'show';
+  }
+
   deleteEmployee(id: number) {
     if (confirm('¿Seguro que quieres eliminar este empleado?')) {
       this.employeeService.delete(id).subscribe(() => {
@@ -261,10 +267,11 @@ export class Employees implements OnInit {
     this.filteredEmployees = [...this.employees];
   }
 
-  setTab(tab: 'list' | 'form') {
+  setTab(tab: 'list' | 'form' | 'show') {
     this.activeTab = tab;
     if (tab === 'list') this.resetForm();
     if (tab === 'form' && !this.editingId) this.resetForm();
+    if (tab === 'show') this.resetForm();
   }
 
   private markAllFieldsAsTouched() {

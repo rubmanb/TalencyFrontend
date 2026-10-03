@@ -16,6 +16,7 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     this.loadUsername();
+    this.loadCompanyName();
   }
 
   private loadUsername() {

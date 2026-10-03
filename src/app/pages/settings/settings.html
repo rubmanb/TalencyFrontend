@@ -192,7 +192,7 @@
               <input
                 class="form-control"
                 [(ngModel)]="general.suscriptionPlan"
-                (ngModelChange)="onChange()"
+                (ngModelChange)="onChange()" readonly
               />
             </div>
           </div>
@@ -281,7 +281,7 @@
           <p><strong>Política:</strong> {{ backup.policy }}</p>
           <p><strong>Último backup:</strong> {{ backup.lastBackup }}</p>
 
-          <div class="alert alert-info">Los backups se gestionan automáticamente por Talency.</div>
+          <div class="alert alert-info">Los backups se gestionan automáticamente por EmGestIQ.</div>
         </div>
       </div>
       } @if (activeTab === 'api') {
